@@ -13,4 +13,8 @@ impl Payload {
     fn iei(&self) -> u8 {
         0x42
     }
+
+    fn len(&self) -> u16 {
+        self.payload.len().try_into().expect("Payload too large")
+    }
 }
