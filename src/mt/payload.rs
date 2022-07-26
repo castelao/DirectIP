@@ -8,3 +8,9 @@
 struct Payload {
     payload: Vec<u8>,
 }
+
+impl Payload {
+    fn iei(&self) -> u8 {
+        0x42
+    }
+}
