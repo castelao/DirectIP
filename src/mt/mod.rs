@@ -34,7 +34,7 @@ trait InformationElementTemplate {
     fn to_vec(&self) -> Vec<u8> {
         let mut buffer: Vec<u8> = Vec::new();
         self.write(&mut buffer)
-            .expect("Failed to write MT-Confirmation to a vec.");
+            .expect("Failed to write Information Element to a vec.");
         buffer
     }
 }
