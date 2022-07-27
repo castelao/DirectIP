@@ -94,6 +94,13 @@ pub(super) struct Confirmation {
     message_status: MessageStatus,
 }
 
+impl Confirmation {
+    /// Information Element Identifier
+    fn identifier(&self) -> u8 {
+        0x44
+    }
+}
+
 impl InformationElementTemplate for Confirmation {
     // Length field of the Confirmation element
     //
