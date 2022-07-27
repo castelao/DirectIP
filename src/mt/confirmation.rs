@@ -1,5 +1,5 @@
 use super::InformationElementTemplate;
-use crate::Error;
+use crate::{Error, Result};
 use byteorder::{BigEndian, ReadBytesExt, WriteBytesExt};
 
 #[derive(Debug)]
@@ -33,7 +33,7 @@ enum MessageStatus {
 }
 
 impl MessageStatus {
-    fn decode(status: i16) -> Result<MessageStatus, Error> {
+    fn decode(status: i16) -> Result<MessageStatus> {
         if (0..=50).contains(&status) {
             return Ok(MessageStatus::SuccessfulQueueOrder(
                 status.try_into().unwrap(),
@@ -56,11 +56,11 @@ impl MessageStatus {
         }
     }
 
-    fn read_from<R: std::io::Read>(mut read: R) -> Result<MessageStatus, Error> {
+    fn read_from<R: std::io::Read>(mut read: R) -> Result<MessageStatus> {
         MessageStatus::decode(read.read_i16::<BigEndian>()?)
     }
 
-    fn write<W: std::io::Write>(&self, wtr: &mut W) -> Result<usize, Error> {
+    fn write<W: std::io::Write>(&self, wtr: &mut W) -> Result<usize> {
         let status = match self {
             MessageStatus::SuccessfulQueueOrder(n) => i16::from(*n),
             MessageStatus::InvalidIMEI => -1,
@@ -121,7 +121,7 @@ impl InformationElementTemplate for Confirmation {
 impl Confirmation {
     #[allow(dead_code)]
     /// Parse a DispositionFlags from a Read trait
-    fn read_from<R: std::io::Read>(mut read: R) -> Result<Confirmation, Error> {
+    fn read_from<R: std::io::Read>(mut read: R) -> Result<Confirmation> {
         let iei = read.read_u8()?;
         assert_eq!(iei, 0x44);
         let len = read.read_u16::<BigEndian>()?;
@@ -140,7 +140,7 @@ impl Confirmation {
         })
     }
 
-    pub(super) fn write<W: std::io::Write>(&self, wtr: &mut W) -> Result<usize, Error> {
+    pub(super) fn write<W: std::io::Write>(&self, wtr: &mut W) -> Result<usize> {
         wtr.write_u8(0x44)?;
         wtr.write_u16::<BigEndian>(25)?;
         wtr.write_u32::<BigEndian>(self.client_msg_id)?;
