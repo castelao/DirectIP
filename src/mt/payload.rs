@@ -10,7 +10,8 @@ struct Payload {
 }
 
 impl Payload {
-    fn iei(&self) -> u8 {
+    /// Information Element Identifier
+    fn identifier(&self) -> u8 {
         0x42
     }
 
