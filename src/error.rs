@@ -12,3 +12,5 @@ pub enum DirectIPError {
     #[error("Undefined error")]
     Undefined,
 }
+
+pub(crate) type Result<T> = core::result::Result<T, DirectIPError>;
