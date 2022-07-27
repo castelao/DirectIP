@@ -1,7 +1,8 @@
 use thiserror::Error;
 
-/// Possible errors for Iridium Direct-IP protocol
+#[allow(dead_code)]
 #[derive(Debug, Error)]
+/// Possible errors for Iridium Direct-IP protocol
 pub enum DirectIPError {
     /// Invalid status for MT::Confirmation::MessageStatus.
     #[error("Invalid MessageStatus: {0}")]
