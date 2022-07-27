@@ -11,4 +11,5 @@ repository = "https://github.com/castelao/DirectIP"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
+byteorder = "1"
 thiserror = "1.0"
