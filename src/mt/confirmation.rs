@@ -103,6 +103,10 @@ impl Confirmation {
 }
 
 impl InformationElementTemplate for Confirmation {
+    fn identifier(&self) -> u8 {
+        0x44
+    }
+
     // Length field of the Confirmation element
     //
     // The length is the second field, just after the Information Element
