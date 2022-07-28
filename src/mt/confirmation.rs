@@ -150,7 +150,7 @@ impl Confirmation {
 
 #[cfg(test)]
 mod test_mt_confirmation {
-    use super::{Confirmation, MessageStatus};
+    use super::{Confirmation, InformationElementTemplate, MessageStatus};
 
     #[test]
     fn confirmation_write() {
