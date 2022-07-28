@@ -23,6 +23,7 @@
 
 use crate::error::DirectIPError as Error;
 
+mod confirmation;
 mod header;
 
 trait InformationElementTemplate {
