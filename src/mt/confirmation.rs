@@ -112,9 +112,16 @@ impl InformationElementTemplate for Confirmation {
         25
     }
 
-    fn write<W: std::io::Write>(&self, wtr: &mut W) -> Result<usize, Error> {
-        wtr.write_u8(0x00)?;
-        Ok(0)
+    fn write<W: std::io::Write>(&self, wtr: &mut W) -> Result<usize> {
+        wtr.write_u8(0x44)?;
+        wtr.write_u16::<BigEndian>(self.len())?;
+        wtr.write_u32::<BigEndian>(self.client_msg_id)?;
+        wtr.write_all(&self.imei)?;
+        wtr.write_u32::<BigEndian>(self.id_reference)?;
+        // Shall we recover n written bytes and confirm that it was 2?
+        let n = self.message_status.write(wtr)?;
+        assert_eq!(n, 2);
+        Ok(28)
     }
 }
 
@@ -138,17 +145,6 @@ impl Confirmation {
             id_reference,
             message_status,
         })
-    }
-
-    pub(super) fn write<W: std::io::Write>(&self, wtr: &mut W) -> Result<usize> {
-        wtr.write_u8(0x44)?;
-        wtr.write_u16::<BigEndian>(25)?;
-        wtr.write_u32::<BigEndian>(self.client_msg_id)?;
-        wtr.write_all(&self.imei)?;
-        wtr.write_u32::<BigEndian>(self.id_reference)?;
-        let n = self.message_status.write(wtr)?;
-        assert_eq!(n, 2);
-        Ok(28)
     }
 }
 
