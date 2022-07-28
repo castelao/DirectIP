@@ -27,6 +27,7 @@ mod confirmation;
 mod header;
 
 trait InformationElementTemplate {
+    fn identifier(&self) -> u8;
     fn len(&self) -> u16;
     fn total_size(&self) -> usize {
         3 + usize::from(self.len())
