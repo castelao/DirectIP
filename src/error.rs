@@ -4,6 +4,9 @@ use thiserror::Error;
 #[derive(Debug, Error)]
 /// Possible errors for Iridium Direct-IP protocol
 pub enum DirectIPError {
+    #[error(transparent)]
+    IOError(#[from] std::io::Error),
+
     /// Invalid status for MT::Confirmation::MessageStatus.
     #[error("Invalid MessageStatus: {0}")]
     InvalidMessageStatus(i16),
