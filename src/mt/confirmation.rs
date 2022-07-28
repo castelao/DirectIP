@@ -5,6 +5,7 @@ use byteorder::{BigEndian, ReadBytesExt, WriteBytesExt};
 #[derive(Debug)]
 enum MessageStatus {
     // Successful, order of message in the MT message queue starting on 0
+    // Currently, the maximum value is 50
     SuccessfulQueueOrder(u8),
     // Invalid IMEI – too few characters, non-numeric characters
     InvalidIMEI,
