@@ -322,7 +322,7 @@ impl InformationElementTemplate for Header {
 
 #[cfg(test)]
 mod test_mt_header {
-    use super::{DispositionFlags, Header};
+    use super::{DispositionFlags, Header, InformationElementTemplate};
 
     #[test]
     fn header_write() {
