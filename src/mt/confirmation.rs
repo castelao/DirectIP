@@ -57,8 +57,8 @@ impl MessageStatus {
         }
     }
 
-    fn read_from<R: std::io::Read>(mut read: R) -> Result<MessageStatus> {
-        MessageStatus::decode(read.read_i16::<BigEndian>()?)
+    fn from_reader<R: std::io::Read>(mut rdr: R) -> Result<MessageStatus> {
+        MessageStatus::decode(rdr.read_i16::<BigEndian>()?)
     }
 
     fn write<W: std::io::Write>(&self, wtr: &mut W) -> Result<usize> {
@@ -127,17 +127,17 @@ impl InformationElementTemplate for Confirmation {
 impl Confirmation {
     #[allow(dead_code)]
     /// Parse a DispositionFlags from a Read trait
-    fn read_from<R: std::io::Read>(mut read: R) -> Result<Confirmation> {
-        let iei = read.read_u8()?;
+    fn from_reader<R: std::io::Read>(mut rdr: R) -> Result<Confirmation> {
+        let iei = rdr.read_u8()?;
         assert_eq!(iei, 0x44);
-        let len = read.read_u16::<BigEndian>()?;
+        let len = rdr.read_u16::<BigEndian>()?;
         assert_eq!(len, 25);
 
-        let client_msg_id = read.read_u32::<BigEndian>()?;
+        let client_msg_id = rdr.read_u32::<BigEndian>()?;
         let mut imei = [0; 15];
-        read.read_exact(&mut imei)?;
-        let id_reference = read.read_u32::<BigEndian>()?;
-        let message_status = MessageStatus::read_from(read)?;
+        rdr.read_exact(&mut imei)?;
+        let id_reference = rdr.read_u32::<BigEndian>()?;
+        let message_status = MessageStatus::from_reader(rdr)?;
         Ok(Confirmation {
             client_msg_id,
             imei,

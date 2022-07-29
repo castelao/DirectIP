@@ -67,8 +67,8 @@ impl DispositionFlags {
     }
 
     /// Parse a DispositionFlags from a Read trait
-    fn read_from<R: std::io::Read>(mut read: R) -> Result<Self, Error> {
-        let code = read.read_u16::<BigEndian>()?;
+    fn from_reader<R: std::io::Read>(mut rdr: R) -> Result<Self, Error> {
+        let code = rdr.read_u16::<BigEndian>()?;
         Ok(DispositionFlags::decode(code))
     }
 
@@ -274,16 +274,16 @@ pub(crate) struct Header {
 
 impl Header {
     // Import a Header from a Read trait
-    fn read_from<R: std::io::Read>(mut read: R) -> Result<Header, Error> {
-        let iei = read.read_u8()?;
+    fn from_reader<R: std::io::Read>(mut rdr: R) -> Result<Header, Error> {
+        let iei = rdr.read_u8()?;
         assert_eq!(iei, 0x41);
-        let len = read.read_u16::<BigEndian>()?;
+        let len = rdr.read_u16::<BigEndian>()?;
         assert_eq!(len, 21);
 
-        let client_msg_id = read.read_u32::<BigEndian>()?;
+        let client_msg_id = rdr.read_u32::<BigEndian>()?;
         let mut imei = [0; 15];
-        read.read_exact(&mut imei)?;
-        let disposition_flags = DispositionFlags::read_from(read)?;
+        rdr.read_exact(&mut imei)?;
+        let disposition_flags = DispositionFlags::from_reader(rdr)?;
 
         Ok(Header {
             client_msg_id,
@@ -389,7 +389,7 @@ mod test_mt_header {
         };
         assert_eq!(
             header,
-            Header::read_from(header.to_vec().as_slice()).unwrap()
+            Header::from_reader(header.to_vec().as_slice()).unwrap()
         );
     }
 }
