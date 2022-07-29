@@ -4,7 +4,7 @@
 //! compose a mobile terminated message. It is defined by an information
 //! element identifier (IEI) with value 0x41.
 
-use crate::Error;
+use crate::error::Error;
 use byteorder::{BigEndian, ReadBytesExt, WriteBytesExt};
 
 #[derive(Debug, PartialEq)]

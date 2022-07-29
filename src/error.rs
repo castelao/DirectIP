@@ -3,9 +3,9 @@ use thiserror::Error;
 #[allow(dead_code)]
 #[derive(Debug, Error)]
 /// Possible errors for Iridium Direct-IP protocol
-pub enum DirectIPError {
+pub enum Error {
     #[error(transparent)]
-    IOError(#[from] std::io::Error),
+    IO(#[from] std::io::Error),
 
     /// Invalid status for MT::Confirmation::MessageStatus.
     #[error("Invalid MessageStatus: {0}")]
@@ -16,4 +16,4 @@ pub enum DirectIPError {
     Undefined,
 }
 
-pub(crate) type Result<T> = core::result::Result<T, DirectIPError>;
+pub(crate) type Result<T> = core::result::Result<T, Error>;

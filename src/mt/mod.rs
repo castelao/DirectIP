@@ -21,7 +21,7 @@
 //! MT Payload Length               2   12
 //! MT Payload                      12  "Hello World!"
 
-use crate::error::DirectIPError as Error;
+use crate::error::Error;
 
 mod confirmation;
 mod header;
