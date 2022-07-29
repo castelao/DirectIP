@@ -5,6 +5,7 @@
 //! element identifier (IEI) with value 0x41.
 
 use crate::error::Error;
+use crate::mt::InformationElementTemplate;
 use byteorder::{BigEndian, ReadBytesExt, WriteBytesExt};
 
 #[derive(Debug, PartialEq)]
@@ -271,22 +272,7 @@ pub(crate) struct Header {
     disposition_flags: DispositionFlags,
 }
 
-// Let's allow dead while still WIP
-#[allow(dead_code)]
 impl Header {
-    /// MT-Header identifier
-    fn identifier(&self) -> u8 {
-        0x41
-    }
-
-    // Header length field
-    //
-    // This is a fixed value for the Header, but used to keep consistency with the
-    // other IEI.
-    pub(crate) fn len(&self) -> usize {
-        21
-    }
-
     // Import a Header from a Read trait
     fn read_from<R: std::io::Read>(mut read: R) -> Result<Header, Error> {
         let iei = read.read_u8()?;
@@ -305,23 +291,32 @@ impl Header {
             disposition_flags,
         })
     }
+}
+
+// Let's allow dead while still WIP
+#[allow(dead_code)]
+impl InformationElementTemplate for Header {
+    /// MT-Header identifier
+    fn identifier(&self) -> u8 {
+        0x41
+    }
+
+    // Header length field
+    //
+    // This is a fixed value for the Header, but used to keep consistency with the
+    // other IEI.
+    fn len(&self) -> u16 {
+        21
+    }
 
     // Export a Header using a Write trait
-    pub(crate) fn write<W: std::io::Write>(&self, wtr: &mut W) -> Result<usize, Error> {
+    fn write<W: std::io::Write>(&self, wtr: &mut W) -> Result<usize, Error> {
         wtr.write_u8(0x41)?;
         wtr.write_u16::<BigEndian>(21)?;
         wtr.write_u32::<BigEndian>(self.client_msg_id)?;
         wtr.write_all(&self.imei)?;
         self.disposition_flags.write(wtr)?;
         Ok(24)
-    }
-
-    // Export header to a vec of bytes
-    fn to_vec(&self) -> Vec<u8> {
-        let mut buffer: Vec<u8> = Vec::new();
-        self.write(&mut buffer)
-            .expect("Failed to write MT-Header to a vec.");
-        buffer
     }
 }
 

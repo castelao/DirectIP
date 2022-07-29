@@ -33,6 +33,7 @@ trait InformationElementTemplate {
         3 + usize::from(self.len())
     }
     fn write<W: std::io::Write>(&self, wtr: &mut W) -> Result<usize, Error>;
+    /// Export Information Element to a vec
     fn to_vec(&self) -> Vec<u8> {
         let mut buffer: Vec<u8> = Vec::new();
         self.write(&mut buffer)
