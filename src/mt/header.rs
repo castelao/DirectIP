@@ -274,6 +274,11 @@ pub(crate) struct Header {
 // Let's allow dead while still WIP
 #[allow(dead_code)]
 impl Header {
+    /// MT-Header identifier
+    fn identifier(&self) -> u8 {
+        0x41
+    }
+
     // Header length field
     //
     // This is a fixed value for the Header, but used to keep consistency with the
