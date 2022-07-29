@@ -119,7 +119,7 @@ impl InformationElementTemplate for Confirmation {
         wtr.write_u32::<BigEndian>(self.id_reference)?;
         // Shall we recover n written bytes and confirm that it was 2?
         let n = self.message_status.write(wtr)?;
-        assert_eq!(n, 2);
+        debug_assert_eq!(n, 2);
         Ok(28)
     }
 }
