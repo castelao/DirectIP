@@ -1,6 +1,7 @@
 //! Mobile Terminated - Payload
 //!
 
+use super::InformationElementTemplate;
 use crate::error::Result;
 use byteorder::{BigEndian, ReadBytesExt, WriteBytesExt};
 
@@ -12,7 +13,7 @@ struct Payload {
     payload: Vec<u8>,
 }
 
-impl Payload {
+impl InformationElementTemplate for Payload {
     /// Information Element Identifier
     fn identifier(&self) -> u8 {
         0x42
