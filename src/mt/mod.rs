@@ -25,6 +25,7 @@ use crate::error::Error;
 
 mod confirmation;
 mod header;
+mod payload;
 
 trait InformationElementTemplate {
     fn identifier(&self) -> u8;
