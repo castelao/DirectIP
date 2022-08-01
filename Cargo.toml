@@ -1,7 +1,7 @@
 [package]
 name = "directip"
 version = "0.1.0"
-authors = ["Guilherme Castelão <guilherme@castelao.net>"]
+authors = ["Guilherme Castelão <guilherme@castelao.net>", "Luiz Irber <luiz.irber@gmail.com>"]
 edition = "2021"
 description = "Iridium SBD Direct-IP communication protocol"
 documentation = "https://docs.rs/directip"
@@ -11,4 +11,5 @@ repository = "https://github.com/castelao/DirectIP"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
+byteorder = "1"
 thiserror = "1.0"

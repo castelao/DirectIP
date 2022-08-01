@@ -4,7 +4,8 @@
 //! compose a mobile terminated message. It is defined by an information
 //! element identifier (IEI) with value 0x41.
 
-use crate::Error;
+use crate::error::Error;
+use crate::mt::InformationElementTemplate;
 use byteorder::{BigEndian, ReadBytesExt, WriteBytesExt};
 
 #[derive(Debug, PartialEq)]
@@ -50,11 +51,11 @@ impl DispositionFlags {
     ///   strict approach, where this would fail if a non-expected bit is
     ///   activated.
     fn decode(code: u16) -> Self {
-        let flush_queue = !matches!(code & 0b0000_0000_0000_0001, 0);
-        let send_ring_alert = !matches!(code & 0b0000_0000_0000_0010, 0);
-        let update_location = !matches!(code & 0b0000_0000_0000_1000, 0);
-        let high_priority = !matches!(code & 0b0000_0000_0001_0000, 0);
-        let assign_mtmsn = !matches!(code & 0b0000_0000_0010_0000, 0);
+        let flush_queue = matches!(code & 0b0000_0000_0000_0001, 1);
+        let send_ring_alert = matches!(code & 0b0000_0000_0000_0010, 2);
+        let update_location = matches!(code & 0b0000_0000_0000_1000, 8);
+        let high_priority = matches!(code & 0b0000_0000_0001_0000, 16);
+        let assign_mtmsn = matches!(code & 0b0000_0000_0010_0000, 32);
 
         DispositionFlags {
             flush_queue,
@@ -66,8 +67,8 @@ impl DispositionFlags {
     }
 
     /// Parse a DispositionFlags from a Read trait
-    fn read_from<R: std::io::Read>(mut read: R) -> Result<Self, Error> {
-        let code = read.read_u16::<BigEndian>()?;
+    fn from_reader<R: std::io::Read>(mut rdr: R) -> Result<Self, Error> {
+        let code = rdr.read_u16::<BigEndian>()?;
         Ok(DispositionFlags::decode(code))
     }
 
@@ -271,28 +272,18 @@ pub(crate) struct Header {
     disposition_flags: DispositionFlags,
 }
 
-// Let's allow dead while still WIP
-#[allow(dead_code)]
 impl Header {
-    // Header length field
-    //
-    // This is a fixed value for the Header, but used to keep consistency with the
-    // other IEI.
-    pub(crate) fn len(&self) -> usize {
-        21
-    }
-
     // Import a Header from a Read trait
-    fn read_from<R: std::io::Read>(mut read: R) -> Result<Header, Error> {
-        let iei = read.read_u8()?;
+    fn from_reader<R: std::io::Read>(mut rdr: R) -> Result<Header, Error> {
+        let iei = rdr.read_u8()?;
         assert_eq!(iei, 0x41);
-        let len = read.read_u16::<BigEndian>()?;
+        let len = rdr.read_u16::<BigEndian>()?;
         assert_eq!(len, 21);
 
-        let client_msg_id = read.read_u32::<BigEndian>()?;
+        let client_msg_id = rdr.read_u32::<BigEndian>()?;
         let mut imei = [0; 15];
-        read.read_exact(&mut imei)?;
-        let disposition_flags = DispositionFlags::read_from(read)?;
+        rdr.read_exact(&mut imei)?;
+        let disposition_flags = DispositionFlags::from_reader(rdr)?;
 
         Ok(Header {
             client_msg_id,
@@ -300,9 +291,26 @@ impl Header {
             disposition_flags,
         })
     }
+}
+
+// Let's allow dead while still WIP
+#[allow(dead_code)]
+impl InformationElementTemplate for Header {
+    /// MT-Header identifier
+    fn identifier(&self) -> u8 {
+        0x41
+    }
+
+    // Header length field
+    //
+    // This is a fixed value for the Header, but used to keep consistency with the
+    // other IEI.
+    fn len(&self) -> u16 {
+        21
+    }
 
     // Export a Header using a Write trait
-    pub(crate) fn write<W: std::io::Write>(&self, wtr: &mut W) -> Result<usize, Error> {
+    fn write<W: std::io::Write>(&self, wtr: &mut W) -> Result<usize, Error> {
         wtr.write_u8(0x41)?;
         wtr.write_u16::<BigEndian>(21)?;
         wtr.write_u32::<BigEndian>(self.client_msg_id)?;
@@ -310,19 +318,11 @@ impl Header {
         self.disposition_flags.write(wtr)?;
         Ok(24)
     }
-
-    // Export header to a vec of bytes
-    fn to_vec(&self) -> Vec<u8> {
-        let mut buffer: Vec<u8> = Vec::new();
-        self.write(&mut buffer)
-            .expect("Failed to write MT-Header to a vec.");
-        buffer
-    }
 }
 
 #[cfg(test)]
 mod test_mt_header {
-    use super::{DispositionFlags, Header};
+    use super::{DispositionFlags, Header, InformationElementTemplate};
 
     #[test]
     fn header_write() {
@@ -389,7 +389,7 @@ mod test_mt_header {
         };
         assert_eq!(
             header,
-            Header::read_from(header.to_vec().as_slice()).unwrap()
+            Header::from_reader(header.to_vec().as_slice()).unwrap()
         );
     }
 }

@@ -1,10 +1,11 @@
 use super::InformationElementTemplate;
-use crate::Error;
+use crate::error::{Error, Result};
 use byteorder::{BigEndian, ReadBytesExt, WriteBytesExt};
 
 #[derive(Debug)]
 enum MessageStatus {
     // Successful, order of message in the MT message queue starting on 0
+    // Currently, the maximum value is 50
     SuccessfulQueueOrder(u8),
     // Invalid IMEI – too few characters, non-numeric characters
     InvalidIMEI,
@@ -33,7 +34,7 @@ enum MessageStatus {
 }
 
 impl MessageStatus {
-    fn decode(status: i16) -> Result<MessageStatus, Error> {
+    fn decode(status: i16) -> Result<MessageStatus> {
         if (0..=50).contains(&status) {
             return Ok(MessageStatus::SuccessfulQueueOrder(
                 status.try_into().unwrap(),
@@ -56,11 +57,11 @@ impl MessageStatus {
         }
     }
 
-    fn read_from<R: std::io::Read>(mut read: R) -> Result<MessageStatus, Error> {
-        MessageStatus::decode(read.read_i16::<BigEndian>()?)
+    fn from_reader<R: std::io::Read>(mut rdr: R) -> Result<MessageStatus> {
+        MessageStatus::decode(rdr.read_i16::<BigEndian>()?)
     }
 
-    fn write<W: std::io::Write>(&self, wtr: &mut W) -> Result<usize, Error> {
+    fn write<W: std::io::Write>(&self, wtr: &mut W) -> Result<usize> {
         let status = match self {
             MessageStatus::SuccessfulQueueOrder(n) => i16::from(*n),
             MessageStatus::InvalidIMEI => -1,
@@ -95,6 +96,11 @@ pub(super) struct Confirmation {
 }
 
 impl InformationElementTemplate for Confirmation {
+    /// Information Element Identifier
+    fn identifier(&self) -> u8 {
+        0x44
+    }
+
     // Length field of the Confirmation element
     //
     // The length is the second field, just after the Information Element
@@ -105,26 +111,33 @@ impl InformationElementTemplate for Confirmation {
         25
     }
 
-    fn write<W: std::io::Write>(&self, wtr: &mut W) -> Result<usize, Error> {
-        wtr.write_u8(0x00)?;
-        Ok(0)
+    fn write<W: std::io::Write>(&self, wtr: &mut W) -> Result<usize> {
+        wtr.write_u8(0x44)?;
+        wtr.write_u16::<BigEndian>(self.len())?;
+        wtr.write_u32::<BigEndian>(self.client_msg_id)?;
+        wtr.write_all(&self.imei)?;
+        wtr.write_u32::<BigEndian>(self.id_reference)?;
+        // Shall we recover n written bytes and confirm that it was 2?
+        let n = self.message_status.write(wtr)?;
+        debug_assert_eq!(n, 2);
+        Ok(28)
     }
 }
 
 impl Confirmation {
     #[allow(dead_code)]
     /// Parse a DispositionFlags from a Read trait
-    fn read_from<R: std::io::Read>(mut read: R) -> Result<Confirmation, Error> {
-        let iei = read.read_u8()?;
+    fn from_reader<R: std::io::Read>(mut rdr: R) -> Result<Confirmation> {
+        let iei = rdr.read_u8()?;
         assert_eq!(iei, 0x44);
-        let len = read.read_u16::<BigEndian>()?;
+        let len = rdr.read_u16::<BigEndian>()?;
         assert_eq!(len, 25);
 
-        let client_msg_id = read.read_u32::<BigEndian>()?;
+        let client_msg_id = rdr.read_u32::<BigEndian>()?;
         let mut imei = [0; 15];
-        read.read_exact(&mut imei)?;
-        let id_reference = read.read_u32::<BigEndian>()?;
-        let message_status = MessageStatus::read_from(read)?;
+        rdr.read_exact(&mut imei)?;
+        let id_reference = rdr.read_u32::<BigEndian>()?;
+        let message_status = MessageStatus::from_reader(rdr)?;
         Ok(Confirmation {
             client_msg_id,
             imei,
@@ -132,22 +145,11 @@ impl Confirmation {
             message_status,
         })
     }
-
-    pub(super) fn write<W: std::io::Write>(&self, wtr: &mut W) -> Result<usize, Error> {
-        wtr.write_u8(0x44)?;
-        wtr.write_u16::<BigEndian>(25)?;
-        wtr.write_u32::<BigEndian>(self.client_msg_id)?;
-        wtr.write_all(&self.imei)?;
-        wtr.write_u32::<BigEndian>(self.id_reference)?;
-        let n = self.message_status.write(wtr)?;
-        assert_eq!(n, 2);
-        Ok(28)
-    }
 }
 
 #[cfg(test)]
 mod test_mt_confirmation {
-    use super::{Confirmation, MessageStatus};
+    use super::{Confirmation, InformationElementTemplate, MessageStatus};
 
     #[test]
     fn confirmation_write() {
