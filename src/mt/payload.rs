@@ -1,6 +1,7 @@
 //! Mobile Terminated - Payload
 //!
 
+use crate::error::Result;
 use byteorder::{BigEndian, ReadBytesExt, WriteBytesExt};
 
 #[derive(Debug)]
@@ -21,7 +22,7 @@ impl Payload {
         self.payload.len().try_into().expect("Payload too large")
     }
 
-    fn write<W: std::io::Write>(&self, wtr: &mut W) -> Result<usize, Error> {
+    fn write<W: std::io::Write>(&self, wtr: &mut W) -> Result<usize> {
         wtr.write_u8(0x42)?;
         wtr.write_u16::<BigEndian>(self.len())?;
         wtr.write_all(&self.payload)?;
