@@ -6,6 +6,9 @@ use crate::error::{Error, Result};
 use byteorder::{BigEndian, ReadBytesExt, WriteBytesExt};
 use log::debug;
 
+/// Maximum accepted payload length defined by the Direct-IP protocol
+const MAX_PAYLOAD_LEN: usize = 1890;
+
 #[derive(Debug)]
 /// Mobile Terminated Payload
 ///
@@ -44,7 +47,10 @@ impl Payload {
             return Err(Error::WrongIEType("MT-Payload".to_string(), 0x42, iei));
         }
         let n = rdr.read_u16::<BigEndian>().unwrap().into();
-        // assert_eq!(len, 25);
+        if n > MAX_PAYLOAD_LEN {
+            debug!("MT-Payload expected to be over-sized: {} bytes", n);
+            return Err(Error::Undefined);
+        }
 
         let mut payload = Vec::with_capacity(n);
         rdr.read_exact(&mut payload)?;
