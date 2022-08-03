@@ -2,7 +2,7 @@
 //!
 
 use super::InformationElementTemplate;
-use crate::error::Result;
+use crate::error::{Error, Result};
 use byteorder::{BigEndian, ReadBytesExt, WriteBytesExt};
 
 #[derive(Debug)]
@@ -35,9 +35,9 @@ impl Payload {
     #[allow(dead_code)]
     fn from_reader<R: std::io::Read>(mut rdr: R) -> Result<Payload> {
         let iei = rdr.read_u8()?;
-        // Replace this by error pointing to wrong type. This will be used
-        // in other places.
-        assert_eq!(iei, 0x42);
+        if iei != 0x42 {
+            return Err(Error::WrongIEType("MT-Payload".to_string(), 0x42, iei));
+        }
         let n = rdr.read_u16::<BigEndian>().unwrap().into();
         // assert_eq!(len, 25);
 
