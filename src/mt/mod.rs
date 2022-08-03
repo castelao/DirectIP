@@ -68,3 +68,28 @@ impl InformationElement {
         }
     }
 }
+
+#[derive(Debug)]
+struct MTMessage {
+    elements: Vec<InformationElement>,
+}
+
+// Let's allow dead while still WIP
+#[allow(dead_code)]
+impl MTMessage {
+    fn write<W: std::io::Write>(&self, wtr: &mut W) -> Result<usize, Error> {
+        // Protocol version
+        wtr.write_u8(1)?;
+        let n: usize = self.elements.iter().map(|e| e.len()).sum();
+        wtr.write_u16::<BigEndian>(
+            n.try_into()
+                .expect("Sum of MT information elements lengths is longer than u16"),
+        )?;
+
+        let mut n = 3;
+        for e in &self.elements {
+            n += e.write(wtr)?;
+        }
+        Ok(n)
+    }
+}
