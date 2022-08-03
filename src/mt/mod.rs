@@ -42,3 +42,29 @@ trait InformationElementTemplate {
         buffer
     }
 }
+
+#[allow(dead_code)]
+#[derive(Debug)]
+enum InformationElement {
+    H(Header),
+    P(Payload),
+    C(Confirmation),
+}
+
+impl InformationElement {
+    fn len(&self) -> u16 {
+        match self {
+            InformationElement::H(element) => element.len(),
+            InformationElement::P(element) => element.len(),
+            InformationElement::C(element) => element.len(),
+        }
+    }
+
+    fn write<W: std::io::Write>(&self, wtr: &mut W) -> Result<usize, Error> {
+        match self {
+            InformationElement::H(element) => element.write(wtr),
+            InformationElement::P(element) => element.write(wtr),
+            InformationElement::C(element) => element.write(wtr),
+        }
+    }
+}
