@@ -12,4 +12,5 @@ repository = "https://github.com/castelao/DirectIP"
 
 [dependencies]
 byteorder = "1"
+log = "0.4"
 thiserror = "1.0"

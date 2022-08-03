@@ -4,6 +4,7 @@
 use super::InformationElementTemplate;
 use crate::error::{Error, Result};
 use byteorder::{BigEndian, ReadBytesExt, WriteBytesExt};
+use log::debug;
 
 #[derive(Debug)]
 /// Mobile Terminated Payload
@@ -36,6 +37,10 @@ impl Payload {
     fn from_reader<R: std::io::Read>(mut rdr: R) -> Result<Payload> {
         let iei = rdr.read_u8()?;
         if iei != 0x42 {
+            debug!(
+                "Wrong IEI type for MT-Payload. Expected 0x42 instead of {}",
+                &iei
+            );
             return Err(Error::WrongIEType("MT-Payload".to_string(), 0x42, iei));
         }
         let n = rdr.read_u16::<BigEndian>().unwrap().into();
