@@ -21,11 +21,16 @@
 //! MT Payload Length               2   12
 //! MT Payload                      12  "Hello World!"
 
-use crate::error::Error;
-
 mod confirmation;
 mod header;
 mod payload;
+
+use byteorder::{BigEndian, ReadBytesExt, WriteBytesExt};
+
+use crate::error::Error;
+use confirmation::Confirmation;
+use header::Header;
+use payload::Payload;
 
 trait InformationElementTemplate {
     fn identifier(&self) -> u8;
