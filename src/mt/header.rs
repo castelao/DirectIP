@@ -32,6 +32,7 @@ struct DispositionFlags {
 }
 
 impl DispositionFlags {
+    #[allow(dead_code)]
     /// Decode a u16 into a DispositionFlags
     ///
     /// Each flag is encoded by a bit in a specific position, which is on
@@ -66,6 +67,7 @@ impl DispositionFlags {
         }
     }
 
+    #[allow(dead_code)]
     /// Parse a DispositionFlags from a Read trait
     fn from_reader<R: std::io::Read>(mut rdr: R) -> Result<Self, Error> {
         let code = rdr.read_u16::<BigEndian>()?;
@@ -273,6 +275,7 @@ pub(crate) struct Header {
 }
 
 impl Header {
+    #[allow(dead_code)]
     // Import a Header from a Read trait
     fn from_reader<R: std::io::Read>(mut rdr: R) -> Result<Header, Error> {
         let iei = rdr.read_u8()?;

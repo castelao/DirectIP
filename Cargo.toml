@@ -1,6 +1,6 @@
 [package]
 name = "directip"
-version = "0.1.0"
+version = "0.1.1"
 authors = ["Guilherme Castelão <guilherme@castelao.net>", "Luiz Irber <luiz.irber@gmail.com>"]
 edition = "2021"
 description = "Iridium SBD Direct-IP communication protocol"
@@ -12,4 +12,5 @@ repository = "https://github.com/castelao/DirectIP"
 
 [dependencies]
 byteorder = "1"
+log = "0.4"
 thiserror = "1.0"
