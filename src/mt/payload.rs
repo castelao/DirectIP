@@ -59,8 +59,6 @@ impl Payload {
 
         let mut payload = Vec::with_capacity(n);
         rdr.read_exact(&mut payload)?;
-        // let mut imei = [0; 15]; ‣[u8; 15]
-        //rdr.read_exact(&mut imei)?;
         Ok(Payload { payload })
     }
 }
