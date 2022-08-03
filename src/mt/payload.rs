@@ -30,3 +30,23 @@ impl InformationElementTemplate for Payload {
         Ok(3 + self.payload.len())
     }
 }
+
+#[cfg(test)]
+mod test_mt_payload {
+    use super::{InformationElementTemplate, Payload};
+
+    #[test]
+    fn write() {
+        let ie = Payload {
+            payload: "Hello World!".into(),
+        };
+        let v = ie.to_vec();
+        assert_eq!(
+            v,
+            [
+                0x42, 0x00, 0x0c, 0x48, 0x65, 0x6c, 0x6c, 0x6f, 0x20, 0x57, 0x6f, 0x72, 0x6c, 0x64,
+                0x21,
+            ]
+        )
+    }
+}
