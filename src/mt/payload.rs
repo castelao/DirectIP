@@ -31,6 +31,24 @@ impl InformationElementTemplate for Payload {
     }
 }
 
+impl Payload {
+    #[allow(dead_code)]
+    fn from_reader<R: std::io::Read>(mut rdr: R) -> Result<Payload> {
+        let iei = rdr.read_u8()?;
+        // Replace this by error pointing to wrong type. This will be used
+        // in other places.
+        assert_eq!(iei, 0x42);
+        let n = rdr.read_u16::<BigEndian>().unwrap().into();
+        // assert_eq!(len, 25);
+
+        let mut payload = Vec::with_capacity(n);
+        rdr.read_exact(&mut payload)?;
+        // let mut imei = [0; 15]; ‣[u8; 15]
+        //rdr.read_exact(&mut imei)?;
+        Ok(Payload { payload })
+    }
+}
+
 #[cfg(test)]
 mod test_mt_payload {
     use super::{InformationElementTemplate, Payload};
