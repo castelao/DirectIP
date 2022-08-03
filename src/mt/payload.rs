@@ -28,6 +28,11 @@ impl InformationElementTemplate for Payload {
     }
 
     fn write<W: std::io::Write>(&self, wtr: &mut W) -> Result<usize> {
+        if usize::from(self.len()) > MAX_PAYLOAD_LEN {
+            debug!("MT-Payload oversized, {} bytes", self.len());
+            return Err(Error::Undefined);
+        }
+
         wtr.write_u8(0x42)?;
         wtr.write_u16::<BigEndian>(self.len())?;
         wtr.write_all(&self.payload)?;
