@@ -25,7 +25,7 @@ mod confirmation;
 mod header;
 mod payload;
 
-use byteorder::{BigEndian, ReadBytesExt, WriteBytesExt};
+use byteorder::{BigEndian, WriteBytesExt};
 
 use crate::error::Error;
 use confirmation::Confirmation;
