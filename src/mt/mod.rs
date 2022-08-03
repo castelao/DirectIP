@@ -30,6 +30,8 @@ mod payload;
 trait InformationElementTemplate {
     fn identifier(&self) -> u8;
     fn len(&self) -> u16;
+    /// Total size of Information Element in bytes
+    /// This includes the identifier and the field len.
     fn total_size(&self) -> usize {
         3 + usize::from(self.len())
     }
