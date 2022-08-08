@@ -25,7 +25,9 @@ mod confirmation;
 mod header;
 mod payload;
 
-use byteorder::{BigEndian, WriteBytesExt};
+use std::io::Read;
+
+use byteorder::{BigEndian, ReadBytesExt, WriteBytesExt};
 
 use crate::error::Error;
 use confirmation::Confirmation;
@@ -73,6 +75,55 @@ impl InformationElement {
             InformationElement::P(element) => element.write(wtr),
             InformationElement::C(element) => element.write(wtr),
         }
+    }
+
+    #[allow(dead_code)]
+    /// Export Information Element to a vec
+    fn to_vec(&self) -> Vec<u8> {
+        let mut buffer: Vec<u8> = Vec::new();
+        self.write(&mut buffer)
+            .expect("Failed to write Information Element to a vec.");
+        buffer
+    }
+
+    #[allow(dead_code)]
+    /// Parse a InformationElement from a Read trait
+    pub(super) fn from_reader<R: std::io::Read>(mut rdr: R) -> Result<Self, Error> {
+        let iei = rdr.read_u8()?;
+        let buffer = [iei; 1];
+        let buffer = buffer.chain(rdr);
+        let element = match iei {
+            0x41 => {
+                let header = Header::from_reader(buffer).unwrap();
+                InformationElement::H(header)
+            }
+            0x42 => {
+                let payload = Payload::from_reader(buffer).unwrap();
+                InformationElement::P(payload)
+            }
+            0x44 => {
+                let confirmation = Confirmation::from_reader(buffer).unwrap();
+                InformationElement::C(confirmation)
+            }
+            _ => return Err(Error::Undefined),
+        };
+        Ok(element)
+    }
+}
+
+#[cfg(test)]
+mod test_mt_information_element {
+    use crate::mt::InformationElement;
+
+    #[test]
+    fn read() {
+        let msg = [
+            0x41, 0x00, 0x15, 0x00, 0x00, 0x27, 0x0f, 0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06,
+            0x07, 0x08, 0x09, 0x0a, 0x0b, 0x0c, 0x0d, 0x0e, 0x00, 0x3b,
+        ]
+        .as_slice();
+        let ie = InformationElement::from_reader(msg).unwrap();
+        dbg!(ie);
     }
 }
 
