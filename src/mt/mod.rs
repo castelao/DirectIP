@@ -84,15 +84,6 @@ impl InformationElementTemplate for InformationElement {
             InformationElement::C(element) => element.write(wtr),
         }
     }
-
-    #[allow(dead_code)]
-    /// Export Information Element to a vec
-    fn to_vec(&self) -> Vec<u8> {
-        let mut buffer: Vec<u8> = Vec::new();
-        self.write(&mut buffer)
-            .expect("Failed to write Information Element to a vec.");
-        buffer
-    }
 }
 
 impl InformationElement {
