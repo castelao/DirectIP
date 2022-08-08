@@ -248,6 +248,13 @@ mod test_disposition_flags {
             assert_eq!(i, DispositionFlags::decode(i).encode())
         }
     }
+
+    #[test]
+    fn read() {
+        let buffer = [0x00, 0x01].as_slice();
+        let flags = DispositionFlags::from_reader(buffer).unwrap();
+        assert!(flags.flush_queue == true);
+    }
 }
 
 /// Mobile Terminated Header
