@@ -141,6 +141,10 @@ impl MTMessage {
         self.elements.iter().map(|e| e.len()).sum()
     }
 
+    fn total_size(&self) -> usize {
+        3 + usize::from(self.len())
+    }
+
     // Write the full message
     fn write<W: std::io::Write>(&self, wtr: &mut W) -> Result<usize, Error> {
         // Protocol version
