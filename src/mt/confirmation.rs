@@ -127,7 +127,7 @@ impl InformationElementTemplate for Confirmation {
 impl Confirmation {
     #[allow(dead_code)]
     /// Parse a DispositionFlags from a Read trait
-    fn from_reader<R: std::io::Read>(mut rdr: R) -> Result<Confirmation> {
+    pub(super) fn from_reader<R: std::io::Read>(mut rdr: R) -> Result<Confirmation> {
         let iei = rdr.read_u8()?;
         assert_eq!(iei, 0x44);
         let len = rdr.read_u16::<BigEndian>()?;

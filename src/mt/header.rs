@@ -277,7 +277,7 @@ pub(crate) struct Header {
 impl Header {
     #[allow(dead_code)]
     // Import a Header from a Read trait
-    fn from_reader<R: std::io::Read>(mut rdr: R) -> Result<Header, Error> {
+    pub(super) fn from_reader<R: std::io::Read>(mut rdr: R) -> Result<Header, Error> {
         let iei = rdr.read_u8()?;
         assert_eq!(iei, 0x41);
         let len = rdr.read_u16::<BigEndian>()?;
