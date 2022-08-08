@@ -60,7 +60,15 @@ enum InformationElement {
     C(Confirmation),
 }
 
-impl InformationElement {
+impl InformationElementTemplate for InformationElement {
+    fn identifier(&self) -> u8 {
+        match self {
+            InformationElement::H(element) => element.identifier(),
+            InformationElement::P(element) => element.identifier(),
+            InformationElement::C(element) => element.identifier(),
+        }
+    }
+
     fn len(&self) -> u16 {
         match self {
             InformationElement::H(element) => element.len(),
@@ -85,7 +93,9 @@ impl InformationElement {
             .expect("Failed to write Information Element to a vec.");
         buffer
     }
+}
 
+impl InformationElement {
     #[allow(dead_code)]
     /// Parse a InformationElement from a Read trait
     pub(super) fn from_reader<R: std::io::Read>(mut rdr: R) -> Result<Self, Error> {
