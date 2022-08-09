@@ -21,15 +21,24 @@
 //! MT Payload Length               2   12
 //! MT Payload                      12  "Hello World!"
 
-use crate::error::Error;
-
 mod confirmation;
 mod header;
 mod payload;
 
+use std::io::Read;
+
+use byteorder::{BigEndian, ReadBytesExt, WriteBytesExt};
+
+use crate::error::Error;
+use confirmation::Confirmation;
+use header::Header;
+use payload::Payload;
+
 trait InformationElementTemplate {
     fn identifier(&self) -> u8;
     fn len(&self) -> u16;
+    /// Total size of Information Element in bytes
+    /// This includes the identifier and the field len.
     fn total_size(&self) -> usize {
         3 + usize::from(self.len())
     }
@@ -41,4 +50,155 @@ trait InformationElementTemplate {
             .expect("Failed to write Information Element to a vec.");
         buffer
     }
+}
+
+#[allow(dead_code)]
+#[derive(Debug)]
+enum InformationElement {
+    H(Header),
+    P(Payload),
+    C(Confirmation),
+}
+
+impl InformationElementTemplate for InformationElement {
+    fn identifier(&self) -> u8 {
+        match self {
+            InformationElement::H(element) => element.identifier(),
+            InformationElement::P(element) => element.identifier(),
+            InformationElement::C(element) => element.identifier(),
+        }
+    }
+
+    fn len(&self) -> u16 {
+        match self {
+            InformationElement::H(element) => element.len(),
+            InformationElement::P(element) => element.len(),
+            InformationElement::C(element) => element.len(),
+        }
+    }
+
+    fn write<W: std::io::Write>(&self, wtr: &mut W) -> Result<usize, Error> {
+        match self {
+            InformationElement::H(element) => element.write(wtr),
+            InformationElement::P(element) => element.write(wtr),
+            InformationElement::C(element) => element.write(wtr),
+        }
+    }
+}
+
+impl InformationElement {
+    #[allow(dead_code)]
+    /// Parse a InformationElement from a Read trait
+    pub(super) fn from_reader<R: std::io::Read>(mut rdr: R) -> Result<Self, Error> {
+        let iei = rdr.read_u8()?;
+        let buffer = [iei; 1];
+        let buffer = buffer.chain(rdr);
+        let element = match iei {
+            0x41 => {
+                let header = Header::from_reader(buffer).unwrap();
+                InformationElement::H(header)
+            }
+            0x42 => {
+                let payload = Payload::from_reader(buffer).unwrap();
+                InformationElement::P(payload)
+            }
+            0x44 => {
+                let confirmation = Confirmation::from_reader(buffer).unwrap();
+                InformationElement::C(confirmation)
+            }
+            _ => return Err(Error::Undefined),
+        };
+        Ok(element)
+    }
+}
+
+#[cfg(test)]
+mod test_mt_information_element {
+    use crate::mt::InformationElement;
+
+    #[test]
+    fn read() {
+        let msg = [
+            0x41, 0x00, 0x15, 0x00, 0x00, 0x27, 0x0f, 0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06,
+            0x07, 0x08, 0x09, 0x0a, 0x0b, 0x0c, 0x0d, 0x0e, 0x00, 0x3b,
+        ]
+        .as_slice();
+        let ie = InformationElement::from_reader(msg).unwrap();
+        dbg!(ie);
+    }
+}
+
+#[derive(Debug)]
+struct MTMessage {
+    elements: Vec<InformationElement>,
+}
+
+// Let's allow dead while still WIP
+#[allow(dead_code)]
+impl MTMessage {
+    // Length of the full message
+    fn len(&self) -> u16 {
+        self.elements.iter().map(|e| e.len()).sum()
+    }
+
+    fn total_size(&self) -> usize {
+        3 + usize::from(self.len())
+    }
+
+    // Write the full message
+    fn write<W: std::io::Write>(&self, wtr: &mut W) -> Result<usize, Error> {
+        // Protocol version
+        wtr.write_u8(1)?;
+        // Message total length
+        wtr.write_u16::<BigEndian>(self.len())?;
+        // Iterate on all Information Elements
+        let mut n = 3;
+        for e in &self.elements {
+            n += e.write(wtr)?;
+        }
+        Ok(n)
+    }
+
+    /// Export MT-Message into a vector of u8
+    fn to_vec(&self) -> Vec<u8> {
+        let mut buffer: Vec<u8> = Vec::new();
+        self.write(&mut buffer)
+            .expect("Failed to write Information Element to a vec.");
+        buffer
+    }
+
+    fn new() -> MTMessage {
+        MTMessage {
+            elements: Vec::new(),
+        }
+    }
+
+    /// Appends an element to the back of an MT-Message
+    ///
+    /// This should be a good place to check for duplicates, i.e. try to insert
+    /// a second header for instance.
+    fn push(&mut self, element: InformationElement) {
+        self.elements.push(element);
+    }
+
+    /*
+    fn from_reader<R: std::io::Read>(mut rdr: R) -> Result<Self, Error> {
+        let version = rdr.read_u8()?;
+        assert_eq!(version, 1);
+        let len = rdr.read_u16::<BigEndian>()?;
+        let mut msg = Self::new();
+        while Some(element) = InformationElement::from_reader(rdr).unwrap() {
+            msg.push(element);
+        }
+
+        Ok(msg)
+    }
+    */
+}
+
+#[cfg(test)]
+mod test_mt_message {
+
+    #[test]
+    fn to_vec() {}
 }

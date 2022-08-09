@@ -248,6 +248,13 @@ mod test_disposition_flags {
             assert_eq!(i, DispositionFlags::decode(i).encode())
         }
     }
+
+    #[test]
+    fn read() {
+        let buffer = [0x00, 0x01].as_slice();
+        let flags = DispositionFlags::from_reader(buffer).unwrap();
+        assert!(flags.flush_queue);
+    }
 }
 
 /// Mobile Terminated Header
@@ -277,7 +284,7 @@ pub(crate) struct Header {
 impl Header {
     #[allow(dead_code)]
     // Import a Header from a Read trait
-    fn from_reader<R: std::io::Read>(mut rdr: R) -> Result<Header, Error> {
+    pub(super) fn from_reader<R: std::io::Read>(mut rdr: R) -> Result<Header, Error> {
         let iei = rdr.read_u8()?;
         assert_eq!(iei, 0x41);
         let len = rdr.read_u16::<BigEndian>()?;

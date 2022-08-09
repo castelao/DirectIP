@@ -13,7 +13,7 @@ const MAX_PAYLOAD_LEN: usize = 1890;
 /// Mobile Terminated Payload
 ///
 /// Note that length is a 2-bytes and valid range is 1-1890
-struct Payload {
+pub(super) struct Payload {
     payload: Vec<u8>,
 }
 
@@ -42,7 +42,7 @@ impl InformationElementTemplate for Payload {
 
 impl Payload {
     #[allow(dead_code)]
-    fn from_reader<R: std::io::Read>(mut rdr: R) -> Result<Payload> {
+    pub(super) fn from_reader<R: std::io::Read>(mut rdr: R) -> Result<Payload> {
         let iei = rdr.read_u8()?;
         if iei != 0x42 {
             debug!(
