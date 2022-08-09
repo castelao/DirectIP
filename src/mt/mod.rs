@@ -166,4 +166,39 @@ impl MTMessage {
             .expect("Failed to write Information Element to a vec.");
         buffer
     }
+
+    fn new() -> MTMessage {
+        MTMessage {
+            elements: Vec::new(),
+        }
+    }
+
+    /// Appends an element to the back of an MT-Message
+    ///
+    /// This should be a good place to check for duplicates, i.e. try to insert
+    /// a second header for instance.
+    fn push(&mut self, element: InformationElement) {
+        self.elements.push(element);
+    }
+
+    /*
+    fn from_reader<R: std::io::Read>(mut rdr: R) -> Result<Self, Error> {
+        let version = rdr.read_u8()?;
+        assert_eq!(version, 1);
+        let len = rdr.read_u16::<BigEndian>()?;
+        let mut msg = Self::new();
+        while Some(element) = InformationElement::from_reader(rdr).unwrap() {
+            msg.push(element);
+        }
+
+        Ok(msg)
+    }
+    */
+}
+
+#[cfg(test)]
+mod test_mt_message {
+
+    #[test]
+    fn to_vec() {}
 }
