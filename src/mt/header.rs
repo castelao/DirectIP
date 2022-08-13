@@ -418,3 +418,71 @@ mod test_mt_header {
         );
     }
 }
+
+/// HeaderBuilder
+///
+/// # Example
+/// ```
+/// use directip::mt::HeaderBuilder;
+/// let header = HeaderBuilder::new()
+///      .set_client_msg_id(9999)
+///      .set_imei([1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 1, 2, 3, 4, 5])
+///      .build();
+/// // assert_eq!(0x41, header.identifier());
+/// assert_eq!(9999, header.client_msg_id());
+/// ```
+pub struct HeaderBuilder {
+    client_msg_id: Option<u32>,
+    imei: Option<[u8; 15]>,
+    disposition_flags: Option<DispositionFlags>,
+}
+
+impl HeaderBuilder {
+    pub fn new() -> HeaderBuilder {
+        HeaderBuilder {
+            client_msg_id: None,
+            imei: None,
+            disposition_flags: None,
+        }
+    }
+
+    pub fn set_client_msg_id(mut self, client_msg_id: u32) -> HeaderBuilder {
+        self.client_msg_id = Some(client_msg_id);
+        self
+    }
+
+    pub fn set_imei(mut self, imei: [u8; 15]) -> HeaderBuilder {
+        self.imei = Some(imei);
+        self
+    }
+    /*
+    fn disposition_flags(mut self, flags: String) -> HeaderBuilder {
+        self
+    }
+    */
+
+    /// Build a Header
+    pub fn build(self) -> Header {
+        // For now let's set all flags false
+        let disposition_flags = DispositionFlags::decode(0x0000);
+        Header {
+            client_msg_id: self.client_msg_id.unwrap(),
+            imei: self.imei.unwrap(),
+            disposition_flags,
+        }
+    }
+}
+
+#[cfg(test)]
+mod test_mt_header_builder {
+    use super::HeaderBuilder;
+
+    #[test]
+    fn build() {
+        let header = HeaderBuilder::new()
+            .set_client_msg_id(9999)
+            .set_imei([1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 1, 2, 3, 4, 5])
+            .build();
+        assert_eq!(9999, header.client_msg_id());
+    }
+}
