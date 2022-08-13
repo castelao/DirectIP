@@ -301,6 +301,21 @@ impl Header {
             disposition_flags,
         })
     }
+
+    /// client_msg_id field
+    fn client_msg_id(self) -> u32 {
+        self.client_msg_id
+    }
+
+    /// imei field
+    fn imei(self) -> [u8; 15] {
+        self.imei
+    }
+
+    /// DispositionFlags field
+    fn disposition_flags(self) -> DispositionFlags {
+        self.disposition_flags
+    }
 }
 
 // Let's allow dead while still WIP
