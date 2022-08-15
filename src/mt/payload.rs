@@ -14,7 +14,8 @@ const MAX_PAYLOAD_LEN: usize = 1890;
 ///
 /// Note that length is a 2-bytes and valid range is 1-1890
 pub(super) struct Payload {
-    #[builder(default = "vec![]")]
+    // Does it make sence a default payload empty? Probably not.
+    #[builder(setter(into), default = "vec![]")]
     payload: Vec<u8>,
 }
 
