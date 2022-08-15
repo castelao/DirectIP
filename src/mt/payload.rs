@@ -9,11 +9,12 @@ use log::debug;
 /// Maximum accepted payload length defined by the Direct-IP protocol
 const MAX_PAYLOAD_LEN: usize = 1890;
 
-#[derive(Debug)]
+#[derive(Builder, Debug)]
 /// Mobile Terminated Payload
 ///
 /// Note that length is a 2-bytes and valid range is 1-1890
 pub(super) struct Payload {
+    #[builder(default = "vec![]")]
     payload: Vec<u8>,
 }
 
@@ -80,5 +81,22 @@ mod test_mt_payload {
                 0x21,
             ]
         )
+    }
+
+    #[test]
+    /// Build Payload without defining fields
+    fn build_defalut() {
+        let payload = PayloadBuilder::default().build().unwrap();
+        assert_eq!(payload.to_vec(), [0x42, 0x00, 0x00]);
+    }
+
+    #[test]
+    /// Build Payload defining a payload
+    fn build() {
+        let payload = PayloadBuilder::default()
+            .payload(vec![4, 2])
+            .build()
+            .unwrap();
+        assert_eq!(payload.to_vec(), [0x42, 0x00, 0x02, 0x04, 0x02]);
     }
 }
