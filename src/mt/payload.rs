@@ -57,14 +57,20 @@ impl Payload {
             return Err(Error::WrongIEType("MT-Payload".to_string(), 0x42, iei));
         }
         let n = rdr.read_u16::<BigEndian>().unwrap().into();
-        if n > MAX_PAYLOAD_LEN {
+        if n == 0 {
+            return Ok(Payload { payload: vec![] });
+        } else if n > MAX_PAYLOAD_LEN {
             debug!("MT-Payload expected to be over-sized: {} bytes", n);
             return Err(Error::Undefined);
+        } else {
+            let mut payload = Vec::with_capacity(n);
+            payload.resize(n, 0);
+            rdr.read_exact(&mut payload)?;
+            if payload.len() > n {
+                return Err(Error::Undefined);
+            }
+            Ok(Payload { payload })
         }
-
-        let mut payload = Vec::with_capacity(n);
-        rdr.read_exact(&mut payload)?;
-        Ok(Payload { payload })
     }
 }
 
@@ -97,6 +103,21 @@ mod test_mt_payload {
                 0x21,
             ]
         )
+    }
+
+    #[test]
+    // Even if the buffer is longer than required, reads the payload with
+    // the correct size.
+    // note: buffer size limited by a u8
+    fn read_exact() {
+        let mut msg: [u8; 255] = [0; 255];
+        msg[0] = 0x42;
+        for i in 0..252 {
+            msg[2] = i;
+            let payload = Payload::from_reader(&msg[..]).unwrap();
+            assert!(payload.len() == i.into());
+            assert!(payload.to_vec().len() - 3 == i.into());
+        }
     }
 
     #[test]
