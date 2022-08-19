@@ -82,7 +82,7 @@ impl PayloadBuilder {
 
 #[cfg(test)]
 mod test_mt_payload {
-    use super::{InformationElementTemplate, Payload};
+    use super::{InformationElementTemplate, Payload, PayloadBuilder, MAX_PAYLOAD_LEN};
 
     #[test]
     fn write() {
