@@ -23,12 +23,14 @@ fn main() {
             Arg::new("server")
                 .long("dest")
                 .required(true)
+                .takes_value(true)
                 .help("Destination server host"),
         )
         .arg(
             Arg::new("imei")
                 .long("imei")
                 .required(true)
+                .takes_value(true)
                 .help("Target IMEI"),
         )
         .arg(
