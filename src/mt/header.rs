@@ -8,7 +8,7 @@ use crate::error::Error;
 use crate::mt::InformationElementTemplate;
 use byteorder::{BigEndian, ReadBytesExt, WriteBytesExt};
 
-#[derive(Debug, PartialEq)]
+#[derive(Builder, Debug, PartialEq)]
 /// Disposition Flags
 ///
 /// Flags:
@@ -23,11 +23,16 @@ use byteorder::{BigEndian, ReadBytesExt, WriteBytesExt};
 ///
 /// * The bit 3 was not defined at this point, skipping from 2nd to 4th.
 ///   Therefore, all flags on would be 0b0000_0000_0011_1011.
-struct DispositionFlags {
+pub struct DispositionFlags {
+    #[builder(default = "false")]
     flush_queue: bool,
+    #[builder(default = "false")]
     send_ring_alert: bool,
+    #[builder(default = "false")]
     update_location: bool,
+    #[builder(default = "false")]
     high_priority: bool,
+    #[builder(default = "false")]
     assign_mtmsn: bool,
 }
 
