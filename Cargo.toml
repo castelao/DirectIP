@@ -11,7 +11,7 @@ repository = "https://github.com/castelao/DirectIP"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [workspace]
-members = ["directip-command"]
+members = ["directip-client"]
 
 [dependencies]
 byteorder = "1"
