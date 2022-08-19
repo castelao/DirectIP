@@ -10,6 +10,10 @@ use log::debug;
 const MAX_PAYLOAD_LEN: usize = 1890;
 
 #[derive(Builder, Debug)]
+#[builder(
+    pattern = "owned",
+    build_fn(error = "crate::error::Error", validate = "Self::validate")
+)]
 /// Mobile Terminated Payload
 ///
 /// Note that length is a 2-bytes and valid range is 1-1890
@@ -61,6 +65,18 @@ impl Payload {
         let mut payload = Vec::with_capacity(n);
         rdr.read_exact(&mut payload)?;
         Ok(Payload { payload })
+    }
+}
+
+impl PayloadBuilder {
+    fn validate(&self) -> Result<()> {
+        if let Some(ref payload) = self.payload {
+            if payload.len() > MAX_PAYLOAD_LEN {
+                dbg!(&payload);
+                return Err(Error::Undefined);
+            }
+        }
+        Ok(())
     }
 }
 
