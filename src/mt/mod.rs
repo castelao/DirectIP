@@ -173,6 +173,10 @@ impl MTMessage {
         }
     }
 
+    pub fn builder() -> MTMessageBuilder {
+        MTMessageBuilder::default()
+    }
+
     /// Appends an element to the back of an MT-Message
     ///
     /// This should be a good place to check for duplicates, i.e. try to insert
@@ -201,4 +205,62 @@ mod test_mt_message {
 
     #[test]
     fn to_vec() {}
+}
+
+pub struct MTMessageBuilder {
+    header: HeaderBuilder,
+    payload: PayloadBuilder,
+}
+
+impl MTMessageBuilder {
+    fn default() -> MTMessageBuilder {
+        MTMessageBuilder {
+            header: HeaderBuilder::default(),
+            payload: PayloadBuilder::default(),
+        }
+    }
+
+    pub fn client_msg_id(mut self, client_msg_id: u32) -> Self {
+        self.header = self.header.client_msg_id(client_msg_id);
+        self
+    }
+
+    pub fn imei(mut self, imei: [u8; 15]) -> Self {
+        self.header = self.header.imei(imei);
+        self
+    }
+
+    pub fn payload(mut self, payload: Vec<u8>) -> Self {
+        self.payload = self.payload.payload(payload);
+        self
+    }
+
+    pub fn build(self) -> MTMessage {
+        let mut msg = MTMessage::new();
+        msg.push(InformationElement::H(self.header.build().unwrap()));
+        msg.push(InformationElement::P(self.payload.build().unwrap()));
+        msg
+    }
+}
+
+#[cfg(test)]
+mod test_mt_message_builder {
+    use crate::mt::MTMessageBuilder;
+
+    #[test]
+    fn build() {
+        let msg = MTMessageBuilder::default()
+            .client_msg_id(9999)
+            .imei([1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 1, 2, 3, 4, 5])
+            .payload(vec![])
+            .build();
+        dbg!(msg);
+
+        /*
+            //builder.header.set_client_msg_id(9999);
+            // let msg = msg.build();
+            dbg!(msg.build());
+            //assert!(false)
+        */
+    }
 }
