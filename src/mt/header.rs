@@ -431,11 +431,21 @@ mod test_mt_header_builder {
     use super::HeaderBuilder;
 
     #[test]
+    fn build_missing_required() {
+        let header = HeaderBuilder::default().build();
+        match header {
+            Err(_) => (),
+            _ => assert!(false),
+        }
+    }
+
+    #[test]
     fn build() {
-        let header = HeaderBuilder::new()
-            .set_client_msg_id(9999)
-            .set_imei([1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 1, 2, 3, 4, 5])
-            .build();
+        let header = HeaderBuilder::default()
+            .client_msg_id(9999)
+            .imei([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 1, 2, 3, 4])
+            .build()
+            .unwrap();
         assert_eq!(9999, header.client_msg_id());
     }
 }
