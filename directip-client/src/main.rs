@@ -4,6 +4,7 @@
 use clap::{Arg, ArgAction, Command};
 use directip::mt::MTMessage;
 use log::LevelFilter;
+//use std::net::TcpStream;
 
 fn main() {
     println!("Hello, world!");
@@ -88,6 +89,12 @@ fn main() {
     */
     dbg!(&msg);
     dbg!(msg.to_vec());
+
+    /*
+    let mut stream = TcpStream::connect("127.0.0.1:10800")?;
+    stream.write(msg.to_vec()).unrwap();
+    stream.read(&mut)
+    */
 }
 
 #[cfg(test)]
