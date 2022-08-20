@@ -1,3 +1,6 @@
+//! Client used to build and send MT-Messages
+//!
+
 use clap::{Arg, ArgAction, Command};
 use directip::mt::MTMessage;
 use log::LevelFilter;
