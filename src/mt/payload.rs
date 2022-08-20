@@ -109,7 +109,7 @@ mod test_mt_payload {
     // the correct size.
     // note: buffer size limited by a u8
     fn read_exact() {
-        let mut msg: [u8; 255] = [0; 255];
+        let mut msg = [0u8; 255];
         msg[0] = 0x42;
         for i in 0..252 {
             msg[2] = i;
