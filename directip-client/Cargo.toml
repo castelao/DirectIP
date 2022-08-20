@@ -9,5 +9,5 @@ edition = "2021"
 [dependencies]
 anyhow = "1.0.62"
 clap = { version = "3.2", features=["cargo"] }
-directip = { path = "../" }
+directip = { version = "0.1.4", path = "../" }
 log = "0.4"
