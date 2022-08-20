@@ -310,16 +310,19 @@ impl Header {
     }
 
     /// client_msg_id field
+    #[allow(dead_code)]
     fn client_msg_id(self) -> u32 {
         self.client_msg_id
     }
 
     /// imei field
+    #[allow(dead_code)]
     fn imei(self) -> [u8; 15] {
         self.imei
     }
 
     /// DispositionFlags field
+    #[allow(dead_code)]
     fn disposition_flags(self) -> DispositionFlags {
         self.disposition_flags
     }
