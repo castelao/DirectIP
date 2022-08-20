@@ -63,8 +63,7 @@ impl Payload {
             debug!("MT-Payload expected to be over-sized: {} bytes", n);
             return Err(Error::Undefined);
         } else {
-            let mut payload = Vec::with_capacity(n);
-            payload.resize(n, 0);
+            let mut payload = vec![0; n];
             rdr.read_exact(&mut payload)?;
             if payload.len() > n {
                 return Err(Error::Undefined);
