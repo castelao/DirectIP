@@ -184,8 +184,14 @@ jobs:
           toolchain: stable
           override: true
 
-      - name: Make sure we can publish
+      - name: Make sure we can publish core library
         uses: actions-rs/cargo@v1
         with:
           command: publish
-          args: --dry-run
+          args: --dry-run -p directip
+
+      - name: Make sure we can publish direciip-client
+        uses: actions-rs/cargo@v1
+        with:
+          command: publish
+          args: --dry-run -p directip-client
