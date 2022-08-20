@@ -87,7 +87,7 @@ impl PayloadBuilder {
 
 #[cfg(test)]
 mod test_mt_payload {
-    use super::{InformationElementTemplate, Payload, PayloadBuilder, MAX_PAYLOAD_LEN};
+    use super::{Error, InformationElementTemplate, Payload, PayloadBuilder, MAX_PAYLOAD_LEN};
 
     #[test]
     fn write() {
@@ -123,8 +123,9 @@ mod test_mt_payload {
     /// Build Payload without defining fields
     fn build_default() {
         let payload = PayloadBuilder::default().build();
-        if let Ok(_) = payload {
-            assert!(false)
+        match payload {
+            Err(Error::UninitializedFieldError(_)) => (),
+            _ => panic!(),
         }
     }
 
