@@ -31,8 +31,8 @@ use byteorder::{BigEndian, ReadBytesExt, WriteBytesExt};
 
 use crate::error::Error;
 use confirmation::Confirmation;
-use header::Header;
-use payload::Payload;
+use header::{Header, HeaderBuilder};
+use payload::{Payload, PayloadBuilder};
 
 trait InformationElementTemplate {
     fn identifier(&self) -> u8;
