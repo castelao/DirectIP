@@ -12,6 +12,7 @@ repository = "https://github.com/castelao/DirectIP"
 
 [workspace]
 members = ["directip-client"]
+default-members = [".", "directip-client"]
 
 [dependencies]
 byteorder = "1"
