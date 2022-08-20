@@ -66,7 +66,7 @@ fn main() {
     };
     dbg!(term_loglevel);
 
-    let server = matches.get_one::<String>("server").unwrap();
+    // let server = matches.get_one::<String>("server").unwrap();
     let msg_id = *matches.get_one::<u32>("msg_id").unwrap();
     let imei = matches.get_one::<String>("imei").unwrap();
     let payload = matches.get_one::<String>("payload").unwrap();
