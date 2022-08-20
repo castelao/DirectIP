@@ -8,7 +8,7 @@ use crate::error::Error;
 use crate::mt::InformationElementTemplate;
 use byteorder::{BigEndian, ReadBytesExt, WriteBytesExt};
 
-#[derive(Builder, Clone, Debug, PartialEq)]
+#[derive(Builder, Clone, Debug, PartialEq, Eq)]
 /// Disposition Flags
 ///
 /// Flags:
