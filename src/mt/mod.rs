@@ -124,7 +124,7 @@ mod test_mt_information_element {
             0x07, 0x08, 0x09, 0x0a, 0x0b, 0x0c, 0x0d, 0x0e, 0x00, 0x3b,
         ]
         .as_slice();
-        let ie = InformationElement::from_reader(msg).unwrap();
+        let _ie = InformationElement::from_reader(msg).unwrap();
     }
 }
 
