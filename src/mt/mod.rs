@@ -129,7 +129,7 @@ mod test_mt_information_element {
 }
 
 #[derive(Debug)]
-struct MTMessage {
+pub struct MTMessage {
     elements: Vec<InformationElement>,
 }
 
