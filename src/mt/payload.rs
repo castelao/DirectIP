@@ -144,7 +144,7 @@ mod test_mt_payload {
         let e = PayloadBuilder::default().payload(p).build().unwrap_err();
         match e {
             crate::error::Error::Undefined => (),
-            _ => assert!(false),
+            _ => panic!(),
         }
     }
 }
