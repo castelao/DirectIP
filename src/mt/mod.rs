@@ -117,6 +117,7 @@ mod test_mt_information_element {
     use crate::mt::InformationElement;
 
     #[test]
+    // Need improvements to properly test it
     fn read() {
         let msg = [
             0x41, 0x00, 0x15, 0x00, 0x00, 0x27, 0x0f, 0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06,
@@ -124,7 +125,6 @@ mod test_mt_information_element {
         ]
         .as_slice();
         let ie = InformationElement::from_reader(msg).unwrap();
-        dbg!(ie);
     }
 }
 
