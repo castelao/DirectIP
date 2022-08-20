@@ -431,14 +431,14 @@ mod test_mt_header {
 
 #[cfg(test)]
 mod test_mt_header_builder {
-    use super::HeaderBuilder;
+    use super::{Error, HeaderBuilder};
 
     #[test]
     fn build_missing_required() {
         let header = HeaderBuilder::default().build();
         match header {
-            Err(_) => (),
-            _ => assert!(false),
+            Err(Error::UninitializedFieldError(_)) => (),
+            _ => panic!(),
         }
     }
 
