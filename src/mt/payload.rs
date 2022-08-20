@@ -58,10 +58,10 @@ impl Payload {
         }
         let n = rdr.read_u16::<BigEndian>().unwrap().into();
         if n == 0 {
-            return Ok(Payload { payload: vec![] });
+            Ok(Payload { payload: vec![] })
         } else if n > MAX_PAYLOAD_LEN {
             debug!("MT-Payload expected to be over-sized: {} bytes", n);
-            return Err(Error::Undefined);
+            Err(Error::Undefined)
         } else {
             let mut payload = vec![0; n];
             rdr.read_exact(&mut payload)?;
