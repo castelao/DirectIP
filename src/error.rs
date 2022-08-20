@@ -7,6 +7,9 @@ pub enum Error {
     #[error(transparent)]
     IO(#[from] std::io::Error),
 
+    #[error(transparent)]
+    UninitializedFieldError(#[from] derive_builder::UninitializedFieldError),
+
     /// Not the expected Information Element type
     #[error("Wrong IEI for {0}. Expected {1} instead of {2}")]
     WrongIEType(String, u8, u8),

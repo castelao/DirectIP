@@ -1,0 +1,13 @@
+[package]
+name = "directip-client"
+version = "0.1.0"
+authors = ["Guilherme Castelão <guilherme@castelao.net>", "Luiz Irber <luiz.irber@gmail.com>"]
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+anyhow = "1.0.62"
+clap = { version = "3.2.5", features=["cargo"] }
+directip = { version = "0.1.4", path = "../" }
+log = "0.4"

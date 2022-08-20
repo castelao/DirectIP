@@ -9,11 +9,16 @@ use log::debug;
 /// Maximum accepted payload length defined by the Direct-IP protocol
 const MAX_PAYLOAD_LEN: usize = 1890;
 
-#[derive(Debug)]
+#[derive(Builder, Debug)]
+#[builder(
+    pattern = "owned",
+    build_fn(error = "crate::error::Error", validate = "Self::validate")
+)]
 /// Mobile Terminated Payload
 ///
 /// Note that length is a 2-bytes and valid range is 1-1890
 pub(super) struct Payload {
+    #[builder(setter(into))]
     payload: Vec<u8>,
 }
 
@@ -52,20 +57,37 @@ impl Payload {
             return Err(Error::WrongIEType("MT-Payload".to_string(), 0x42, iei));
         }
         let n = rdr.read_u16::<BigEndian>().unwrap().into();
-        if n > MAX_PAYLOAD_LEN {
+        if n == 0 {
+            Ok(Payload { payload: vec![] })
+        } else if n > MAX_PAYLOAD_LEN {
             debug!("MT-Payload expected to be over-sized: {} bytes", n);
-            return Err(Error::Undefined);
+            Err(Error::Undefined)
+        } else {
+            let mut payload = vec![0; n];
+            rdr.read_exact(&mut payload)?;
+            if payload.len() > n {
+                return Err(Error::Undefined);
+            }
+            Ok(Payload { payload })
         }
+    }
+}
 
-        let mut payload = Vec::with_capacity(n);
-        rdr.read_exact(&mut payload)?;
-        Ok(Payload { payload })
+impl PayloadBuilder {
+    fn validate(&self) -> Result<()> {
+        if let Some(ref payload) = self.payload {
+            if payload.len() > MAX_PAYLOAD_LEN {
+                dbg!(&payload);
+                return Err(Error::Undefined);
+            }
+        }
+        Ok(())
     }
 }
 
 #[cfg(test)]
 mod test_mt_payload {
-    use super::{InformationElementTemplate, Payload};
+    use super::{Error, InformationElementTemplate, Payload, PayloadBuilder, MAX_PAYLOAD_LEN};
 
     #[test]
     fn write() {
@@ -80,5 +102,49 @@ mod test_mt_payload {
                 0x21,
             ]
         )
+    }
+
+    #[test]
+    // Even if the buffer is longer than required, reads the payload with
+    // the correct size.
+    // note: buffer size limited by a u8
+    fn read_exact() {
+        let mut msg = [0u8; 255];
+        msg[0] = 0x42;
+        for i in 0..252 {
+            msg[2] = i;
+            let payload = Payload::from_reader(&msg[..]).unwrap();
+            assert!(payload.len() == i.into());
+            assert!(payload.to_vec().len() - 3 == i.into());
+        }
+    }
+
+    #[test]
+    /// Build Payload without defining fields
+    fn build_default() {
+        let payload = PayloadBuilder::default().build();
+        match payload {
+            Err(Error::UninitializedFieldError(_)) => (),
+            _ => panic!(),
+        }
+    }
+
+    #[test]
+    /// Build Payload defining a payload
+    /// Note that it implicitly uses into() (payload is a Vec)
+    fn build() {
+        let payload = PayloadBuilder::default().payload([4, 2]).build().unwrap();
+        assert_eq!(payload.to_vec(), [0x42, 0x00, 0x02, 0x04, 0x02]);
+    }
+
+    #[test]
+    /// The builder should fail with an oversized
+    fn build_oversized() {
+        let p = [0; (MAX_PAYLOAD_LEN + 1)];
+        let e = PayloadBuilder::default().payload(p).build().unwrap_err();
+        match e {
+            crate::error::Error::Undefined => (),
+            _ => panic!(),
+        }
     }
 }

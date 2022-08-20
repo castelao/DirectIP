@@ -158,11 +158,11 @@ jobs:
       - uses: actions/checkout@v2
 
       - name: check if README matches MSRV defined here
-        run: grep '1.56.0' README.md
+        run: grep '1.57.0' README.md
 
       - uses: actions-rs/toolchain@v1
         with:
-          toolchain: 1.56.0
+          toolchain: 1.57.0
           override: true
 
       - name: Check if it builds
@@ -184,8 +184,14 @@ jobs:
           toolchain: stable
           override: true
 
-      - name: Make sure we can publish
+      - name: Make sure we can publish core library
         uses: actions-rs/cargo@v1
         with:
           command: publish
-          args: --dry-run
+          args: --dry-run -p directip
+
+      - name: Make sure we can publish direciip-client
+        uses: actions-rs/cargo@v1
+        with:
+          command: publish
+          args: --dry-run -p directip-client

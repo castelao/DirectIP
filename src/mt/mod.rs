@@ -31,8 +31,8 @@ use byteorder::{BigEndian, ReadBytesExt, WriteBytesExt};
 
 use crate::error::Error;
 use confirmation::Confirmation;
-use header::Header;
-use payload::Payload;
+use header::{Header, HeaderBuilder};
+use payload::{Payload, PayloadBuilder};
 
 trait InformationElementTemplate {
     fn identifier(&self) -> u8;
@@ -117,19 +117,19 @@ mod test_mt_information_element {
     use crate::mt::InformationElement;
 
     #[test]
+    // Need improvements to properly test it
     fn read() {
         let msg = [
             0x41, 0x00, 0x15, 0x00, 0x00, 0x27, 0x0f, 0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06,
             0x07, 0x08, 0x09, 0x0a, 0x0b, 0x0c, 0x0d, 0x0e, 0x00, 0x3b,
         ]
         .as_slice();
-        let ie = InformationElement::from_reader(msg).unwrap();
-        dbg!(ie);
+        let _ie = InformationElement::from_reader(msg).unwrap();
     }
 }
 
 #[derive(Debug)]
-struct MTMessage {
+pub struct MTMessage {
     elements: Vec<InformationElement>,
 }
 
@@ -160,7 +160,7 @@ impl MTMessage {
     }
 
     /// Export MT-Message into a vector of u8
-    fn to_vec(&self) -> Vec<u8> {
+    pub fn to_vec(&self) -> Vec<u8> {
         let mut buffer: Vec<u8> = Vec::new();
         self.write(&mut buffer)
             .expect("Failed to write Information Element to a vec.");
@@ -171,6 +171,10 @@ impl MTMessage {
         MTMessage {
             elements: Vec::new(),
         }
+    }
+
+    pub fn builder() -> MTMessageBuilder {
+        MTMessageBuilder::default()
     }
 
     /// Appends an element to the back of an MT-Message
@@ -201,4 +205,62 @@ mod test_mt_message {
 
     #[test]
     fn to_vec() {}
+}
+
+pub struct MTMessageBuilder {
+    header: HeaderBuilder,
+    payload: PayloadBuilder,
+}
+
+impl MTMessageBuilder {
+    fn default() -> MTMessageBuilder {
+        MTMessageBuilder {
+            header: HeaderBuilder::default(),
+            payload: PayloadBuilder::default(),
+        }
+    }
+
+    pub fn client_msg_id(mut self, client_msg_id: u32) -> Self {
+        self.header = self.header.client_msg_id(client_msg_id);
+        self
+    }
+
+    pub fn imei(mut self, imei: [u8; 15]) -> Self {
+        self.header = self.header.imei(imei);
+        self
+    }
+
+    pub fn payload(mut self, payload: Vec<u8>) -> Self {
+        self.payload = self.payload.payload(payload);
+        self
+    }
+
+    pub fn build(self) -> MTMessage {
+        let mut msg = MTMessage::new();
+        msg.push(InformationElement::H(self.header.build().unwrap()));
+        msg.push(InformationElement::P(self.payload.build().unwrap()));
+        msg
+    }
+}
+
+#[cfg(test)]
+mod test_mt_message_builder {
+    use crate::mt::MTMessageBuilder;
+
+    #[test]
+    fn build() {
+        let msg = MTMessageBuilder::default()
+            .client_msg_id(9999)
+            .imei([1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 1, 2, 3, 4, 5])
+            .payload(vec![])
+            .build();
+        dbg!(msg);
+
+        /*
+            //builder.header.set_client_msg_id(9999);
+            // let msg = msg.build();
+            dbg!(msg.build());
+            //assert!(false)
+        */
+    }
 }

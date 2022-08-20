@@ -8,7 +8,7 @@ use crate::error::Error;
 use crate::mt::InformationElementTemplate;
 use byteorder::{BigEndian, ReadBytesExt, WriteBytesExt};
 
-#[derive(Debug, PartialEq)]
+#[derive(Builder, Clone, Debug, PartialEq, Eq)]
 /// Disposition Flags
 ///
 /// Flags:
@@ -23,11 +23,16 @@ use byteorder::{BigEndian, ReadBytesExt, WriteBytesExt};
 ///
 /// * The bit 3 was not defined at this point, skipping from 2nd to 4th.
 ///   Therefore, all flags on would be 0b0000_0000_0011_1011.
-struct DispositionFlags {
+pub struct DispositionFlags {
+    #[builder(default = "false")]
     flush_queue: bool,
+    #[builder(default = "false")]
     send_ring_alert: bool,
+    #[builder(default = "false")]
     update_location: bool,
+    #[builder(default = "false")]
     high_priority: bool,
+    #[builder(default = "false")]
     assign_mtmsn: bool,
 }
 
@@ -257,6 +262,8 @@ mod test_disposition_flags {
     }
 }
 
+#[derive(Builder, Debug, PartialEq)]
+#[builder(pattern = "owned", build_fn(error = "crate::error::Error"))]
 /// Mobile Terminated Header
 ///
 /// IEI: 0x41
@@ -274,10 +281,10 @@ mod test_disposition_flags {
 /// * DispositionFlags: A set of flags available to the client trigger
 ///   specific actions on the Iridium Gateway. See [DispositionFlags] for
 ///   more details.
-#[derive(Debug, PartialEq)]
 pub(crate) struct Header {
     client_msg_id: u32, // or 4 u8?
     imei: [u8; 15],
+    #[builder(default = "DispositionFlagsBuilder::default().build().unwrap()")]
     disposition_flags: DispositionFlags,
 }
 
@@ -300,6 +307,24 @@ impl Header {
             imei,
             disposition_flags,
         })
+    }
+
+    /// client_msg_id field
+    #[allow(dead_code)]
+    fn client_msg_id(self) -> u32 {
+        self.client_msg_id
+    }
+
+    /// imei field
+    #[allow(dead_code)]
+    fn imei(self) -> [u8; 15] {
+        self.imei
+    }
+
+    /// DispositionFlags field
+    #[allow(dead_code)]
+    fn disposition_flags(self) -> DispositionFlags {
+        self.disposition_flags
     }
 }
 
@@ -401,5 +426,29 @@ mod test_mt_header {
             header,
             Header::from_reader(header.to_vec().as_slice()).unwrap()
         );
+    }
+}
+
+#[cfg(test)]
+mod test_mt_header_builder {
+    use super::{Error, HeaderBuilder};
+
+    #[test]
+    fn build_missing_required() {
+        let header = HeaderBuilder::default().build();
+        match header {
+            Err(Error::UninitializedFieldError(_)) => (),
+            _ => panic!(),
+        }
+    }
+
+    #[test]
+    fn build() {
+        let header = HeaderBuilder::default()
+            .client_msg_id(9999)
+            .imei([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 1, 2, 3, 4])
+            .build()
+            .unwrap();
+        assert_eq!(9999, header.client_msg_id());
     }
 }
