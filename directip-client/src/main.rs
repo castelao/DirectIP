@@ -22,7 +22,7 @@ fn main() {
         )
         .arg(
             Arg::new("server")
-                .long("dest")
+                .long("server")
                 .required(true)
                 .takes_value(true)
                 .help("Destination server host"),
@@ -66,6 +66,7 @@ fn main() {
     };
     dbg!(term_loglevel);
 
+    let server = matches.get_one::<String>("server").unwrap();
     let msg_id = *matches.get_one::<u32>("msg_id").unwrap();
     let imei = matches.get_one::<String>("imei").unwrap();
     let payload = matches.get_one::<String>("payload").unwrap();
@@ -90,8 +91,8 @@ fn main() {
     dbg!(&msg);
     dbg!(msg.to_vec());
 
+    //let mut stream = TcpStream::connect(server);
     /*
-    let mut stream = TcpStream::connect("127.0.0.1:10800")?;
     stream.write(msg.to_vec()).unrwap();
     stream.read(&mut)
     */
