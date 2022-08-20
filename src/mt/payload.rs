@@ -135,4 +135,15 @@ mod test_mt_payload {
         let payload = PayloadBuilder::default().payload([4, 2]).build().unwrap();
         assert_eq!(payload.to_vec(), [0x42, 0x00, 0x02, 0x04, 0x02]);
     }
+
+    #[test]
+    /// The builder should fail with an oversized
+    fn build_oversized() {
+        let p = [0; (MAX_PAYLOAD_LEN + 1)];
+        let e = PayloadBuilder::default().payload(p).build().unwrap_err();
+        match e {
+            crate::error::Error::Undefined => (),
+            _ => assert!(false),
+        }
+    }
 }
