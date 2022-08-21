@@ -128,6 +128,28 @@ mod test_mt_information_element {
     }
 }
 
+impl From<Header> for InformationElement {
+    fn from(header: Header) -> Self {
+        InformationElement::H(header)
+    }
+}
+
+#[cfg(test)]
+mod test_mt_information_element_from {
+    use crate::mt::{Header, InformationElement, InformationElementTemplate};
+
+    #[test]
+    fn header() {
+        let header = Header::builder()
+            .client_msg_id(9999)
+            .imei([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 1, 2, 3, 4])
+            .build()
+            .unwrap();
+        let ie = InformationElement::from(header);
+        assert!(ie.identifier() == 0x41);
+    }
+}
+
 #[derive(Debug)]
 pub struct MTMessage {
     elements: Vec<InformationElement>,
