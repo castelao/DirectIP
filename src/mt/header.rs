@@ -326,6 +326,11 @@ impl Header {
     fn disposition_flags(self) -> DispositionFlags {
         self.disposition_flags
     }
+
+    #[allow(dead_code)]
+    pub(crate) fn builder() -> HeaderBuilder {
+        HeaderBuilder::default()
+    }
 }
 
 // Let's allow dead while still WIP
