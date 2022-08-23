@@ -71,6 +71,10 @@ impl Payload {
             Ok(Payload { payload })
         }
     }
+    #[allow(dead_code)]
+    pub(crate) fn builder() -> PayloadBuilder {
+        PayloadBuilder::default()
+    }
 }
 
 impl PayloadBuilder {
