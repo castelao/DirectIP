@@ -128,6 +128,47 @@ mod test_mt_information_element {
     }
 }
 
+impl From<Confirmation> for InformationElement {
+    fn from(confirmation: Confirmation) -> Self {
+        InformationElement::C(confirmation)
+    }
+}
+
+impl From<Header> for InformationElement {
+    fn from(header: Header) -> Self {
+        InformationElement::H(header)
+    }
+}
+
+impl From<Payload> for InformationElement {
+    fn from(payload: Payload) -> Self {
+        InformationElement::P(payload)
+    }
+}
+
+#[cfg(test)]
+mod test_mt_information_element_from {
+    use crate::mt::{Header, InformationElement, InformationElementTemplate, Payload};
+
+    #[test]
+    fn header() {
+        let header = Header::builder()
+            .client_msg_id(9999)
+            .imei([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 1, 2, 3, 4])
+            .build()
+            .unwrap();
+        let ie = InformationElement::from(header);
+        assert!(ie.identifier() == 0x41);
+    }
+
+    #[test]
+    fn payload() {
+        let payload = Payload::builder().payload("Hey, it's me!").build().unwrap();
+        let ie = InformationElement::from(payload);
+        assert!(ie.identifier() == 0x42);
+    }
+}
+
 #[derive(Debug)]
 pub struct MTMessage {
     elements: Vec<InformationElement>,
