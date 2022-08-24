@@ -4,7 +4,8 @@
 use clap::{Arg, ArgAction, Command};
 use directip::mt::MTMessage;
 use log::LevelFilter;
-//use std::net::TcpStream;
+use std::io::{Read, Write};
+use std::net::TcpStream;
 
 fn main() {
     println!("Hello, world!");
@@ -66,7 +67,7 @@ fn main() {
     };
     dbg!(term_loglevel);
 
-    // let server = matches.get_one::<String>("server").unwrap();
+    let server = matches.get_one::<String>("server").unwrap();
     let msg_id = *matches.get_one::<u32>("msg_id").unwrap();
     let imei = matches.get_one::<String>("imei").unwrap();
     let payload = matches.get_one::<String>("payload").unwrap();
@@ -91,11 +92,11 @@ fn main() {
     dbg!(&msg);
     dbg!(msg.to_vec());
 
-    //let mut stream = TcpStream::connect(server);
-    /*
-    stream.write(msg.to_vec()).unrwap();
-    stream.read(&mut)
-    */
+    let mut stream = TcpStream::connect(server).unwrap();
+    stream.write(msg.to_vec().as_slice()).unwrap();
+    let mut buffer = [0u8; 56];
+    stream.read(&mut buffer).unwrap();
+    dbg!(buffer);
 }
 
 #[cfg(test)]
