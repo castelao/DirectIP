@@ -104,10 +104,11 @@ fn main() {
     debug!("Connecting");
     let mut stream = TcpStream::connect(server).unwrap();
     debug!("Transmitting");
-    stream.write(msg.to_vec().as_slice()).unwrap();
+    let n = stream.write(msg.to_vec().as_slice()).unwrap();
+    info!("Transmitted {} bytes", n);
     let mut buffer = [0u8; 56];
     let n = stream.read(&mut buffer).unwrap();
-    debug!("Confirmation: {:02x?}", &buffer[..n]);
+    info!("Confirmation: {:02x?}", &buffer[..n]);
 }
 
 #[cfg(test)]
