@@ -21,13 +21,11 @@ extern crate log;
 
 use clap::{Arg, ArgAction, Command};
 use directip::mt::MTMessage;
-use log::LevelFilter;
+// use log::LevelFilter;
 use std::io::{Read, Write};
 use std::net::TcpStream;
 
 fn main() {
-    println!("Hello, world!");
-
     let cmd = Command::new("DIPCommand")
         .author(clap::crate_authors!("\n"))
         .version(clap::crate_version!())
@@ -73,7 +71,7 @@ fn main() {
         );
     let matches = cmd.get_matches();
 
-    //let term_loglevel = match matches.occurrences_of("verbose") {
+    /*
     let term_loglevel = match matches
         .get_one::<u8>("verbose")
         .expect("Count always defaulted")
@@ -83,23 +81,16 @@ fn main() {
         2 => LevelFilter::Debug,
         _ => LevelFilter::Trace,
     };
-    dbg!(term_loglevel);
+    */
 
     let server = matches.get_one::<String>("server").unwrap();
     let msg_id = *matches.get_one::<u32>("msg_id").unwrap();
     let imei = matches.get_one::<String>("imei").unwrap();
     let payload = matches.get_one::<String>("payload").unwrap();
 
-    println!(
-        "verbose: {:?}",
-        matches
-            .get_one::<u8>("verbose")
-            .expect("Count always defaulted")
-    );
-
+    debug!("Composing MT-Message");
     let msg = MTMessage::builder()
         .client_msg_id(msg_id)
-        // .imei(imei.clone().into_bytes().try_into().unwrap())
         .imei(imei.as_bytes().try_into().unwrap())
         .payload(payload.as_bytes().try_into().unwrap())
         .build();
@@ -107,14 +98,16 @@ fn main() {
     /*
         disposition_flags: DispositionFlags::decode(0x0000),
     */
-    dbg!(&msg);
-    dbg!(msg.to_vec());
+    debug!("Composed message: {:?}", msg);
+    debug!("MTMessage stream: {:02x?}", msg);
 
+    debug!("Connecting");
     let mut stream = TcpStream::connect(server).unwrap();
+    debug!("Transmitting");
     stream.write(msg.to_vec().as_slice()).unwrap();
     let mut buffer = [0u8; 56];
-    stream.read(&mut buffer).unwrap();
-    dbg!(buffer);
+    let n = stream.read(&mut buffer).unwrap();
+    debug!("Confirmation: {:02x?}", &buffer[..n]);
 }
 
 #[cfg(test)]
