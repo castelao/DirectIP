@@ -1,5 +1,20 @@
-//! Client used to build and send MT-Messages
+//! Client used to compose and send MT-Messages
 //!
+//! # Example
+//! directip-client --msg-id=987 --server 127.0.0.1:10800 --imei 012345678901234 "Hello World"
+//!
+//! # Future plans (not in priority order):
+//!
+//! * Allow use of disposition flags. Currently assumes all flags off;
+//! * Allow binary payload. Currently only takes ASCII;
+//! * Logging on terminal as well as file based to keep history;
+//! * Default value for client message id, so that the user doesn't need to
+//!   define it explicitly;
+//! * A catalog of destinations. It is not always convenient to memorize
+//!   IMEIs, thus an internal catalog with aliases can be quite convenient;
+//! * A dry-run option;
+//! * Handle the confirmation acknowledgment. Inform success with queue
+//!   position or an informative error message;
 
 use clap::{Arg, ArgAction, Command};
 use directip::mt::MTMessage;
