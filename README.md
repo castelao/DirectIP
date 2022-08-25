@@ -2,9 +2,9 @@
 
 Iridium's Direct-IP protocol of Short Burst Data communication system.
 
-This crate is focused on Mobile Terminated messages, often used to transmit
-commands to a remote station. For instance, it could be used to send commands
-to an under water glider.
+This crate is focused on transmitting Mobile Terminated messages, often used
+to send commands to a remote station. For instance, it could be used to
+communicate with an under water glider (a scientific autonomous robot).
 
 ## Minimum supported Rust version
 
