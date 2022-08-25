@@ -29,5 +29,13 @@ dual licensed as above, without any additional terms or conditions.
 
 ## Alternatives
 
-* [sbd-rs](https://crates.io/crates/sbd)
-* [snb_lib](https://crates.io/crates/sbd_lib)
+* [sbd-rs](https://crates.io/crates/sbd): Handles the Mobile-Originated side
+  of the SBD protocol and provides a server to listen for incoming MO messages
+  . This crate was ahead of its time when it started. (@gadomski, 2015)
+* [snb_lib](https://crates.io/crates/sbd_lib): I believe it contains some
+  elements of the sbd-rs crate, extending to MT messages while using serde
+  to serialize and deserialize. Some interesting uses of the language
+  beyond the basics. (@a1ien, 2018)
+* [sbd.py](https://xed.ch/project/isbd/) This is a Python solution with a lot
+  of information on the protocol and concepts. Very useful independent of the
+  language you will use. (@cxed, 2016)
