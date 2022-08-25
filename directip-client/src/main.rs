@@ -16,6 +16,9 @@
 //! * Handle the confirmation acknowledgment. Inform success with queue
 //!   position or an informative error message;
 
+#[macro_use]
+extern crate log;
+
 use clap::{Arg, ArgAction, Command};
 use directip::mt::MTMessage;
 use log::LevelFilter;
