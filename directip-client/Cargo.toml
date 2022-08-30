@@ -6,7 +6,7 @@ edition = "2021"
 description = "Iridium SBD Direct-IP communication client"
 documentation = "https://docs.rs/directip-client"
 license = "MIT OR Apache-2.0"
-repository = "https://github.com/castelao/DirectIP"
+repository = "https://github.com/castelao/DirectIP/tree/main/directip-client"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
