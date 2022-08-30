@@ -278,8 +278,8 @@ impl MTMessageBuilder {
 
     pub fn build(self) -> MTMessage {
         let mut msg = MTMessage::new();
-        msg.push(InformationElement::H(self.header.build().unwrap()));
-        msg.push(InformationElement::P(self.payload.build().unwrap()));
+        msg.push(self.header.build().unwrap().into());
+        msg.push(self.payload.build().unwrap().into());
         msg
     }
 }
