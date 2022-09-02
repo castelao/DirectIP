@@ -61,6 +61,19 @@ fn main() {
                 .help("Unique client message id"),
         )
         .arg(
+            Arg::new("encoding")
+                .long("encoding")
+                .action(ArgAction::SetTrue),
+                .value_parser(["ascii", "hex", "binary"]),
+                .help("Reads payload from a file"),
+        )
+        .arg(
+            Arg::new("from-file")
+                .long("from-file")
+                .action(ArgAction::SetTrue),
+                .help("Reads payload from a file"),
+        )
+        .arg(
             Arg::new("payload")
                 .required(true)
                 .takes_value(true)
