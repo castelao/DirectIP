@@ -1,7 +1,9 @@
 //! Client used to compose and send MT-Messages
 //!
 //! # Example
+//! ```text
 //! directip-client --msg-id=987 --server 127.0.0.1:10800 --imei 012345678901234 "Hello World"
+//! ```
 //!
 //! # Future plans (not in priority order):
 //!
