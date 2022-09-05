@@ -63,9 +63,9 @@ fn main() {
         .arg(
             Arg::new("encoding")
                 .long("encoding")
-                .action(ArgAction::SetTrue),
-                .value_parser(["ascii", "hex", "binary"]),
-                .help("Reads payload from a file"),
+                .value_parser(["ascii", "hex", "binary"])
+                .default_value("ascii")
+                .help("Payload encoding"),
         )
         .arg(
             Arg::new("from-file")
@@ -101,6 +101,7 @@ fn main() {
     let server = matches.get_one::<String>("server").unwrap();
     let msg_id = *matches.get_one::<u32>("msg_id").unwrap();
     let imei = matches.get_one::<String>("imei").unwrap();
+    let encoding: &String = matches.get_one("encoding").expect("default");
     let payload = matches.get_one::<String>("payload").unwrap();
 
     debug!("Composing MT-Message");
