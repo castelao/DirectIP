@@ -70,7 +70,7 @@ fn main() {
         .arg(
             Arg::new("from-file")
                 .long("from-file")
-                .action(ArgAction::SetTrue),
+                .action(ArgAction::SetTrue)
                 .help("Reads payload from a file"),
         )
         .arg(
