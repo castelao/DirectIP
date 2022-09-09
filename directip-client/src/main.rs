@@ -24,10 +24,11 @@ extern crate log;
 use clap::{Arg, ArgAction, Command};
 use directip::mt::MTMessage;
 // use log::LevelFilter;
-use std::io::{Read, Write};
+use std::fs::File;
+use std::io::{BufReader, Read, Write};
 use std::net::TcpStream;
 
-fn main() {
+fn main() -> anyhow::Result<()> {
     let cmd = Command::new("DIPCommand")
         .author(clap::crate_authors!("\n"))
         .version(clap::crate_version!())
@@ -68,7 +69,7 @@ fn main() {
                 .help("Payload encoding"),
         )
         .arg(
-            Arg::new("from-file")
+            Arg::new("from_file")
                 .long("from-file")
                 .action(ArgAction::SetTrue)
                 .help("Reads payload from a file"),
@@ -103,6 +104,22 @@ fn main() {
     let imei = matches.get_one::<String>("imei").unwrap();
     let encoding: &String = matches.get_one("encoding").expect("default");
     let payload = matches.get_one::<String>("payload").unwrap();
+    let from_file = matches.get_one::<bool>("from_file").unwrap_or(&false);
+
+    let payload = if *from_file {
+        let mut s = String::new();
+        let mut reader = BufReader::new(File::open(payload)?);
+        reader.read_to_string(&mut s)?;
+
+        if matches!(encoding.as_ref(), "ascii") {
+            s.trim_end().into()
+        } else {
+            s
+        }
+    } else {
+        // TODO: process encoding?
+        payload.clone()
+    };
 
     debug!("Composing MT-Message");
     let msg = MTMessage::builder()
@@ -125,6 +142,8 @@ fn main() {
     let mut buffer = [0u8; 56];
     let n = stream.read(&mut buffer).unwrap();
     info!("Confirmation: {:02x?}", &buffer[..n]);
+
+    Ok(())
 }
 
 #[cfg(test)]
