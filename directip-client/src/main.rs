@@ -5,6 +5,15 @@
 //! directip-client --msg-id=987 --server 127.0.0.1:10800 --imei 012345678901234 "Hello World"
 //! ```
 //!
+//! # API reference
+//!
+//! - from-file: Optional argument. When used, it is expected a path to a file
+//!   instead of the payload itself, such as:
+//!   ```text
+//!   echo "Hello world" > ./my_command.txt
+//!   directip-client ... --from-file ./my_command.txt
+//!   ```
+//!
 //! # Future plans (not in priority order):
 //!
 //! * Allow use of disposition flags. Currently assumes all flags off;
