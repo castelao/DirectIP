@@ -106,26 +106,28 @@ fn main() -> anyhow::Result<()> {
     let payload = matches.get_one::<String>("payload").unwrap();
     let from_file = matches.get_one::<bool>("from_file").unwrap_or(&false);
 
-    let payload = if *from_file {
-        let mut s = String::new();
+    let payload: Vec<u8> = if *from_file {
         let mut reader = BufReader::new(File::open(payload)?);
-        reader.read_to_string(&mut s)?;
 
-        if matches!(encoding.as_ref(), "ascii") {
-            s.trim_end().into()
-        } else {
+        if matches!(encoding.as_ref(), "binary") {
+            let mut s = vec![];
+            reader.read_to_end(&mut s)?;
             s
+        // Handle binary and hex
+        } else {
+            let mut s = String::new();
+            reader.read_to_string(&mut s)?;
+            s.trim_end().into()
         }
     } else {
-        // TODO: process encoding?
-        payload.clone()
+        payload.as_bytes().into()
     };
 
     debug!("Composing MT-Message");
     let msg = MTMessage::builder()
         .client_msg_id(msg_id)
         .imei(imei.as_bytes().try_into().unwrap())
-        .payload(payload.as_bytes().try_into().unwrap())
+        .payload(payload)
         .build();
 
     /*
