@@ -23,7 +23,6 @@
 //!   define it explicitly;
 //! * A catalog of destinations. It is not always convenient to memorize
 //!   IMEIs, thus an internal catalog with aliases can be quite convenient;
-//! * A dry-run option;
 //! * Handle the confirmation acknowledgment. Inform success with queue
 //!   position or an informative error message;
 
@@ -48,6 +47,12 @@ fn main() -> anyhow::Result<()> {
                 .long("verbose")
                 .action(ArgAction::Count)
                 .help("Sets the level of verbosity"),
+        )
+        .arg(
+            Arg::new("dry_run")
+                .long("dry-run")
+                .action(ArgAction::SetTrue)
+                .help("Dump message instead of transmitting it"),
         )
         .arg(
             Arg::new("server")
@@ -114,6 +119,7 @@ fn main() -> anyhow::Result<()> {
     let encoding: &String = matches.get_one("encoding").expect("default");
     let payload = matches.get_one::<String>("payload").unwrap();
     let from_file = matches.get_one::<bool>("from_file").unwrap_or(&false);
+    let dry_run = matches.get_one::<bool>("dry_run").unwrap_or(&false);
 
     let payload: Vec<u8> = if *from_file {
         let mut reader = BufReader::new(File::open(payload)?);
@@ -145,14 +151,18 @@ fn main() -> anyhow::Result<()> {
     debug!("Composed message: {:?}", msg);
     debug!("MTMessage stream: {:02x?}", msg);
 
-    debug!("Connecting");
-    let mut stream = TcpStream::connect(server).unwrap();
-    debug!("Transmitting");
-    let n = stream.write(msg.to_vec().as_slice()).unwrap();
-    info!("Transmitted {} bytes", n);
-    let mut buffer = [0u8; 56];
-    let n = stream.read(&mut buffer).unwrap();
-    info!("Confirmation: {:02x?}", &buffer[..n]);
+    if *dry_run {
+        dbg!(msg);
+    } else {
+        debug!("Connecting");
+        let mut stream = TcpStream::connect(server).unwrap();
+        debug!("Transmitting");
+        let n = stream.write(msg.to_vec().as_slice()).unwrap();
+        info!("Transmitted {} bytes", n);
+        let mut buffer = [0u8; 56];
+        let n = stream.read(&mut buffer).unwrap();
+        info!("Confirmation: {:02x?}", &buffer[..n]);
+    }
 
     Ok(())
 }
