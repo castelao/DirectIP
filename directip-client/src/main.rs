@@ -33,7 +33,7 @@ use clap::{Arg, ArgAction, Command};
 use directip::mt::MTMessage;
 // use log::LevelFilter;
 use std::fs::File;
-use std::io::{BufReader, Read, Write};
+use std::io::{stdin, BufReader, Read, Write};
 use std::net::TcpStream;
 
 fn main() -> anyhow::Result<()> {
@@ -88,12 +88,7 @@ fn main() -> anyhow::Result<()> {
                 .action(ArgAction::SetTrue)
                 .help("Reads payload from a file"),
         )
-        .arg(
-            Arg::new("payload")
-                .required(true)
-                .takes_value(true)
-                .help("Payload"),
-        )
+        .arg(Arg::new("payload").takes_value(true).help("Payload"))
         // .arg(Arg::new("disposition-flags").multiple_values(true))
         .after_help(
             "Longer explanation to appear after the options when \
@@ -117,9 +112,18 @@ fn main() -> anyhow::Result<()> {
     let msg_id = *matches.get_one::<u32>("msg_id").unwrap();
     let imei = matches.get_one::<String>("imei").unwrap();
     let encoding: &String = matches.get_one("encoding").expect("default");
-    let payload = matches.get_one::<String>("payload").unwrap();
     let from_file = matches.get_one::<bool>("from_file").unwrap_or(&false);
     let dry_run = matches.get_one::<bool>("dry_run").unwrap_or(&false);
+
+    let payload: Vec<u8> = match matches.get_one::<String>("payload") {
+        Some(p) => p.clone().into_bytes(),
+        None => {
+            let mut buffer = vec![];
+            let mut stdin = stdin().lock();
+            stdin.read_to_end(&mut buffer)?;
+            buffer
+        }
+    };
 
     let payload: Vec<u8> = if *from_file {
         let mut reader = BufReader::new(File::open(payload)?);
