@@ -6,7 +6,7 @@ This crate is focused on transmitting Mobile Terminated messages, often used
 to send commands to a remote station. For instance, it could be used to
 communicate with an under water glider (a scientific autonomous robot).
 
-## Installation
+## Install
 
 ### MacOS (Apple Silicon)
 
@@ -41,6 +41,13 @@ chmod +x directip
 ``` shell
 Invoke-WebRequest -Uri 'https://github.com/castelao/DirectIP/releases/latest/download/directip-client-x86_64-pc-windows-msvc.exe' -OutFile directip
 ```
+
+### From source code
+
+Install the Rust compiler if you don't already have it. Follow the
+instructions at https://www.rust-lang.org/tools/install
+
+Compile it: cargo build --release -p directip-client
 
 ## Minimum supported Rust version
 
