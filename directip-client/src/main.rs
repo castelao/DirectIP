@@ -126,7 +126,7 @@ fn main() -> anyhow::Result<()> {
     };
 
     let payload: Vec<u8> = if *from_file {
-        let path = String::from_utf8(payload.into()).unwrap();
+        let path = String::from_utf8(payload).unwrap();
         let mut reader = BufReader::new(File::open(path)?);
 
         if matches!(encoding.as_ref(), "binary") {
@@ -140,7 +140,7 @@ fn main() -> anyhow::Result<()> {
             s.trim_end().into()
         }
     } else {
-        payload.into()
+        payload
     };
 
     debug!("Composing MT-Message");
