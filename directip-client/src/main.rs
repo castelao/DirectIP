@@ -1,9 +1,17 @@
 //! Client used to compose and send MT-Messages
 //!
 //! # Example
+//!
+//! Giving the payload as an ASCII argument:
 //! ```text
 //! directip-client --msg-id=987 --server 127.0.0.1:10800 --imei 012345678901234 "Hello World"
 //! ```
+//!
+//! or chain it with another command to pass a binary payload using stdin:
+//! ```text
+//! head -c 8 /dev/urandom | directip-client --msg-id=987 --server 127.0.0.1:10800 --imei 012345678901234
+//! ```
+//!
 //!
 //! # API reference
 //!
@@ -17,7 +25,6 @@
 //! # Future plans (not in priority order):
 //!
 //! * Allow use of disposition flags. Currently assumes all flags off;
-//! * Allow binary payload. Currently only takes ASCII;
 //! * Logging on terminal as well as file based to keep history;
 //! * Default value for client message id, so that the user doesn't need to
 //!   define it explicitly;
