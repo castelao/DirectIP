@@ -22,6 +22,10 @@
 //!   directip-client ... --from-file ./my_command.txt
 //!   ```
 //!
+//! - encoding:
+//!   - ascii: Default option. Expects a valid UTF8.
+//!   - binary: Transmit as it is.
+//!
 //! # Future plans (not in priority order):
 //!
 //! * Allow use of disposition flags. Currently assumes all flags off;
