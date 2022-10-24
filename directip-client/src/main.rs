@@ -1,7 +1,18 @@
 //! Client used to compose and send MT-Messages
 //!
 //! # Example
+//! ```text
 //! directip-client --msg-id=987 --server 127.0.0.1:10800 --imei 012345678901234 "Hello World"
+//! ```
+//!
+//! # API reference
+//!
+//! - from-file: Optional argument. When used, it is expected a path to a file
+//!   instead of the payload itself, such as:
+//!   ```text
+//!   echo "Hello world" > ./my_command.txt
+//!   directip-client ... --from-file ./my_command.txt
+//!   ```
 //!
 //! # Future plans (not in priority order):
 //!
@@ -12,7 +23,6 @@
 //!   define it explicitly;
 //! * A catalog of destinations. It is not always convenient to memorize
 //!   IMEIs, thus an internal catalog with aliases can be quite convenient;
-//! * A dry-run option;
 //! * Handle the confirmation acknowledgment. Inform success with queue
 //!   position or an informative error message;
 
@@ -22,10 +32,11 @@ extern crate log;
 use clap::{Arg, ArgAction, Command};
 use directip::mt::MTMessage;
 // use log::LevelFilter;
-use std::io::{Read, Write};
+use std::fs::File;
+use std::io::{stdin, BufReader, Read, Write};
 use std::net::TcpStream;
 
-fn main() {
+fn main() -> anyhow::Result<()> {
     let cmd = Command::new("DIPCommand")
         .author(clap::crate_authors!("\n"))
         .version(clap::crate_version!())
@@ -36,6 +47,12 @@ fn main() {
                 .long("verbose")
                 .action(ArgAction::Count)
                 .help("Sets the level of verbosity"),
+        )
+        .arg(
+            Arg::new("dry_run")
+                .long("dry-run")
+                .action(ArgAction::SetTrue)
+                .help("Dump message instead of transmitting it"),
         )
         .arg(
             Arg::new("server")
@@ -59,11 +76,19 @@ fn main() {
                 .help("Unique client message id"),
         )
         .arg(
-            Arg::new("payload")
-                .required(true)
-                .takes_value(true)
-                .help("Payload"),
+            Arg::new("encoding")
+                .long("encoding")
+                .value_parser(["ascii", "hex", "binary"])
+                .default_value("ascii")
+                .help("Payload encoding"),
         )
+        .arg(
+            Arg::new("from_file")
+                .long("from-file")
+                .action(ArgAction::SetTrue)
+                .help("Reads payload from a file"),
+        )
+        .arg(Arg::new("payload").takes_value(true).help("Payload"))
         // .arg(Arg::new("disposition-flags").multiple_values(true))
         .after_help(
             "Longer explanation to appear after the options when \
@@ -86,13 +111,43 @@ fn main() {
     let server = matches.get_one::<String>("server").unwrap();
     let msg_id = *matches.get_one::<u32>("msg_id").unwrap();
     let imei = matches.get_one::<String>("imei").unwrap();
-    let payload = matches.get_one::<String>("payload").unwrap();
+    let encoding: &String = matches.get_one("encoding").expect("default");
+    let from_file = matches.get_one::<bool>("from_file").unwrap_or(&false);
+    let dry_run = matches.get_one::<bool>("dry_run").unwrap_or(&false);
+
+    let payload: Vec<u8> = match matches.get_one::<String>("payload") {
+        Some(p) => p.clone().into_bytes(),
+        None => {
+            let mut buffer = vec![];
+            let mut stdin = stdin();
+            stdin.read_to_end(&mut buffer)?;
+            buffer
+        }
+    };
+
+    let payload: Vec<u8> = if *from_file {
+        let path = String::from_utf8(payload).unwrap();
+        let mut reader = BufReader::new(File::open(path)?);
+
+        if matches!(encoding.as_ref(), "binary") {
+            let mut s = vec![];
+            reader.read_to_end(&mut s)?;
+            s
+        // Handle binary and hex
+        } else {
+            let mut s = String::new();
+            reader.read_to_string(&mut s)?;
+            s.trim_end().into()
+        }
+    } else {
+        payload
+    };
 
     debug!("Composing MT-Message");
     let msg = MTMessage::builder()
         .client_msg_id(msg_id)
         .imei(imei.as_bytes().try_into().unwrap())
-        .payload(payload.as_bytes().try_into().unwrap())
+        .payload(payload)
         .build();
 
     /*
@@ -101,14 +156,20 @@ fn main() {
     debug!("Composed message: {:?}", msg);
     debug!("MTMessage stream: {:02x?}", msg);
 
-    debug!("Connecting");
-    let mut stream = TcpStream::connect(server).unwrap();
-    debug!("Transmitting");
-    let n = stream.write(msg.to_vec().as_slice()).unwrap();
-    info!("Transmitted {} bytes", n);
-    let mut buffer = [0u8; 56];
-    let n = stream.read(&mut buffer).unwrap();
-    info!("Confirmation: {:02x?}", &buffer[..n]);
+    if *dry_run {
+        dbg!(msg);
+    } else {
+        debug!("Connecting");
+        let mut stream = TcpStream::connect(server).unwrap();
+        debug!("Transmitting");
+        let n = stream.write(msg.to_vec().as_slice()).unwrap();
+        info!("Transmitted {} bytes", n);
+        let mut buffer = [0u8; 56];
+        let n = stream.read(&mut buffer).unwrap();
+        info!("Confirmation: {:02x?}", &buffer[..n]);
+    }
+
+    Ok(())
 }
 
 #[cfg(test)]
