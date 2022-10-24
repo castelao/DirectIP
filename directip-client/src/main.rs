@@ -119,7 +119,7 @@ fn main() -> anyhow::Result<()> {
         Some(p) => p.clone().into_bytes(),
         None => {
             let mut buffer = vec![];
-            let mut stdin = stdin().lock();
+            let mut stdin = stdin();
             stdin.read_to_end(&mut buffer)?;
             buffer
         }
