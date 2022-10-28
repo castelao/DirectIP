@@ -1,18 +1,5 @@
 //! Client used to compose and send MT-Messages
 //!
-//! # Example
-//!
-//! Giving the payload as an ASCII argument:
-//! ```text
-//! directip-client --msg-id=987 --server 127.0.0.1:10800 --imei 012345678901234 "Hello World"
-//! ```
-//!
-//! or chain it with another command to pass a binary payload using stdin:
-//! ```text
-//! head -c 8 /dev/urandom | directip-client --msg-id=987 --server 127.0.0.1:10800 --imei 012345678901234
-//! ```
-//!
-//!
 //! # API reference
 //!
 //! - from-file: Optional argument. When used, it is expected a path to a file
@@ -23,8 +10,36 @@
 //!   ```
 //!
 //! - encoding:
-//!   - ascii: Default option. Expects a valid UTF8.
+//!   - ascii: Default option. Expects a valid UTF-8.
 //!   - binary: Transmit as it is.
+//!
+//! # Examples
+//!
+//! Note that the examples below expect a server running local. If that's not
+//! your case, you can add '--dry-run' to test it.
+//!
+//! ## ASCII payload
+//!
+//! Giving the payload as an ASCII argument:
+//! ```shell,no_run
+//! directip-client --msg-id=987 --server 127.0.0.1:10800 --imei 012345678901234 "Hello World"
+//! ```
+//!
+//! or chain it with another command and pass the payload through stdin:
+//! ```text
+//! echo "Hello World" | directip-client --msg-id=987 --server 127.0.0.1:10800 --imei 012345678901234
+//! ```
+//!
+//! ## Binary payload
+//!
+//! Chain it with another command to pass a binary payload using stdin:
+//! ```text
+//! head -c 8 /dev/urandom | directip-client --msg-id=987 --server 127.0.0.1:10800 --imei 012345678901234
+//! ```
+//!
+//! ## HEX payload
+//!
+//! WIP
 //!
 //! # Future plans (not in priority order):
 //!
