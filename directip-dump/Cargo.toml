@@ -1,25 +1,17 @@
 [package]
-name = "directip"
-version = "0.2.2"
+name = "directip-dump"
+version = "0.1.0"
 authors = ["Guilherme Castelão <guilherme@castelao.net>", "Luiz Irber <luiz.irber@gmail.com>"]
 edition = "2021"
-description = "Iridium SBD Direct-IP communication protocol"
+description = "Iridium SBD Direct-IP message parser"
 documentation = "https://docs.rs/directip"
 license = "MIT OR Apache-2.0"
 repository = "https://github.com/castelao/DirectIP"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
-[workspace]
-members = ["directip-client", "directip-dump"]
-default-members = [".", "directip-client"]
-
 [dependencies]
-byteorder = "1"
-chrono = "0.4.23"
+anyhow = "1.0.62"
+clap = { version = "3.2.5", features=["cargo"] }
+directip = { version = "0.1.4", path = "../" }
 log = "0.4"
-thiserror = "1.0"
-derive_builder = "0.11.2"
-
-[lib]
-name = "directip"
