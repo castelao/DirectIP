@@ -3,7 +3,7 @@ name: Release
 on:
   push:
     tags:
-      - 'v*.*.*'
+      - 'c*.*.*'
   workflow_dispatch:
 
 jobs:
