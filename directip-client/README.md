@@ -47,7 +47,12 @@ Invoke-WebRequest -Uri 'https://github.com/castelao/DirectIP/releases/latest/dow
 Install the Rust compiler if you don't already have it. Follow the
 instructions at https://www.rust-lang.org/tools/install
 
-Compile it: cargo build --release -p directip-client
+Compile it by running: `cargo build --release -p directip-client`
+
+## Documentation
+
+Compile the documentation locally with: `cargo doc -p directip-client`, or
+access it online at: https://docs.rs/crate/directip-client/
 
 ## Minimum supported Rust version
 
