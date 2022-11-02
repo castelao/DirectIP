@@ -11,10 +11,6 @@ communicate with an under water glider (a scientific autonomous robot).
 
 - from-file: Optional argument. When used, it is expected a path to a file
   instead of the payload itself, such as:
-  ```text
-  echo "Hello world" > ./my_command.txt
-  directip-client ... --from-file ./my_command.txt
-  ```
 
 - encoding:
   - ascii: Default option. Expects a valid UTF-8.
@@ -27,7 +23,7 @@ your case, you can add '--dry-run' to test it.
 
 ## ASCII payload
 
-Giving the payload as an ASCII argument:
+Giving the payload as an argument:
 
 ```shell,no_run
 directip-client --msg-id=987 --server 127.0.0.1:10800 --imei 012345678901234 "Hello World"
@@ -36,6 +32,12 @@ directip-client --msg-id=987 --server 127.0.0.1:10800 --imei 012345678901234 "He
 or chain it with another command and pass the payload through stdin:
 ```text
 echo "Hello World" | directip-client --msg-id=987 --server 127.0.0.1:10800 --imei 012345678901234
+```
+
+or load it from a file:
+```text
+echo "Hello world" > ./my_command.txt
+directip-client --msg-id=987 --server 127.0.0.1:10800 --imei 012345678901234 --from-file ./my_command.txt
 ```
 
 ## Binary payload
