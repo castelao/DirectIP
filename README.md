@@ -37,14 +37,27 @@ echo "Hello World" | directip-client --msg-id=987 --server 127.0.0.1:10800 --ime
 or load it from a file:
 ```text
 echo "Hello world" > ./my_command.txt
-directip-client --msg-id=987 --server 127.0.0.1:10800 --imei 012345678901234 --from-file ./my_command.txt
+directip-client --server 127.0.0.1:10800 \
+    --msg-id=987 \
+    --imei 012345678901234 \
+    --from-file ./my_command.txt
 ```
 
 ## Binary payload
 
 Chain it with another command to pass a binary payload using stdin:
 ```text
-head -c 8 /dev/urandom | directip-client --msg-id=987 --server 127.0.0.1:10800 --imei 012345678901234
+head -c 8 /dev/urandom | directip-client --server 127.0.0.1:10800 --msg-id=987 --imei 012345678901234
+```
+
+or load it from a file:
+```text
+head -c 8 /dev/urandom > ./my_command.txt
+directip-client --server 127.0.0.1:10800 \
+    --msg-id=987 \
+    --imei 012345678901234 \
+    --encoding=binary \
+    --from-file ./my_command.txt
 ```
 
 ## HEX payload
