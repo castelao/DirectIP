@@ -2,8 +2,8 @@ use super::InformationElementTemplate;
 use crate::error::{Error, Result};
 use byteorder::{BigEndian, ReadBytesExt, WriteBytesExt};
 
-#[derive(Debug)]
-enum MessageStatus {
+#[derive(Clone, Debug)]
+pub(super) enum MessageStatus {
     // Successful, order of message in the MT message queue starting on 0
     // Currently, the maximum value is 50
     SuccessfulQueueOrder(u8),
@@ -82,7 +82,8 @@ impl MessageStatus {
     }
 }
 
-#[derive(Debug)]
+#[derive(Builder, Debug)]
+#[builder(pattern = "owned", build_fn(error = "crate::error::Error"))]
 pub(super) struct Confirmation {
     // From Client (not MTMSN)
     client_msg_id: u32,
@@ -145,6 +146,11 @@ impl Confirmation {
             message_status,
         })
     }
+
+    #[allow(dead_code)]
+    pub(crate) fn builder() -> ConfirmationBuilder {
+        ConfirmationBuilder::default()
+    }
 }
 
 #[cfg(test)]
@@ -170,5 +176,32 @@ mod test_mt_confirmation {
                 0x07, 0x08, 0x09, 0x0a, 0x0b, 0x0c, 0x0d, 0x0e, 0xff, 0xff, 0xff, 0xff, 0xff, 0xf5
             ]
         );
+    }
+}
+
+#[cfg(test)]
+mod test_mt_confirmation_builder {
+    use super::{ConfirmationBuilder, Error};
+
+    #[test]
+    fn build_missing_required() {
+        let confirmation = ConfirmationBuilder::default().build();
+        match confirmation {
+            Err(Error::UninitializedFieldError(_)) => (),
+            _ => panic!(),
+        }
+    }
+
+    #[test]
+    fn build() {
+        let confirmation = ConfirmationBuilder::default()
+            .client_msg_id(9999)
+            .imei([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 1, 2, 3, 4])
+            .id_reference(0)
+            .message_status(super::MessageStatus::SuccessfulQueueOrder(0))
+            .build()
+            .unwrap();
+
+        // assert_eq!(0x44, confirmation.identifier());
     }
 }
