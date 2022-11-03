@@ -208,6 +208,25 @@ impl MTMessage {
         buffer
     }
 
+    /// Parse bytes from a buffer to compose an MTMessage
+    pub(super) fn from_reader<R: std::io::Read>(mut rdr: R) -> Result<Self, Error> {
+        // Protocol version
+        let version = rdr.read_u8()?;
+        // Expects version 1
+        assert_eq!(version, 1);
+        // Message total length
+        let length = rdr.read_u16::<BigEndian>().expect("Failed to read length");
+
+        let mut msg = MTMessage::new();
+        let element =
+            InformationElement::from_reader(rdr).expect("Problems reading Information Element");
+        msg.push(element.into());
+        // For now, it expects a message with a single element.
+        assert_eq!(msg.total_size(), (length as usize + 3));
+
+        Ok(msg)
+    }
+
     fn new() -> MTMessage {
         MTMessage {
             elements: Vec::new(),
