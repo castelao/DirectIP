@@ -49,11 +49,68 @@ instructions at https://www.rust-lang.org/tools/install
 
 Compile it by running: `cargo build --release -p directip-client`
 
-## Documentation
+## Options and customization
 
-Compile the documentation locally with: `cargo doc -p directip-client`, or
-access it online at: https://docs.rs/crate/directip-client/
+- dry-run: Create a message and show in the screen without trying to
+           transmit it.
 
+- encoding:
+  - ascii: Default option. Expects a valid UTF-8.
+  - binary: Transmit as it is.
+  - hex: Not fully functional yet.
+
+- from-file: When used, it is expected a path to a file instead of the
+             payload itself.
+
+## Examples
+
+Note that the examples below expect a server running local. If that's not
+your case, you can add `--dry-run` to test it.
+
+### ASCII payload
+
+Giving the payload as an argument:
+
+```shell,no_run
+directip-client --msg-id=987 --server 127.0.0.1:10800 --imei 012345678901234 "Hello World"
+```
+
+or chain it with another command and pass the payload through stdin:
+```text
+echo "Hello World" | directip-client --msg-id=987 --server 127.0.0.1:10800 --imei 012345678901234
+```
+
+or load it from a file:
+```text
+echo "Hello world" > ./my_command.txt
+
+directip-client --server 127.0.0.1:10800 \
+    --msg-id=987 \
+    --imei 012345678901234 \
+    --from-file ./my_command.txt
+```
+
+### Binary payload
+
+Chain it with another command to pass a binary payload using stdin:
+```text
+head -c 8 /dev/urandom | directip-client --server 127.0.0.1:10800 --msg-id=987 --imei 012345678901234
+```
+
+or load it from a file:
+```text
+head -c 8 /dev/urandom > ./my_command.txt
+
+directip-client --server 127.0.0.1:10800 \
+    --msg-id=987 \
+    --imei 012345678901234 \
+    --encoding=binary \
+    --from-file ./my_command.txt
+```
+
+### HEX payload
+
+WIP
 ## Minimum supported Rust version
 
 Currently the minimum supported Rust version is 1.57.0
