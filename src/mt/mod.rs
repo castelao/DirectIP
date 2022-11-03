@@ -220,7 +220,7 @@ impl MTMessage {
         let mut msg = MTMessage::new();
         let element =
             InformationElement::from_reader(rdr).expect("Problems reading Information Element");
-        msg.push(element.into());
+        msg.push(element);
         // For now, it expects a message with a single element.
         assert_eq!(msg.total_size(), (length as usize + 3));
 
