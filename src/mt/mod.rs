@@ -183,7 +183,7 @@ impl MTMessage {
     }
 
     fn total_size(&self) -> usize {
-        3 + usize::from(self.len())
+        3 + self.elements.iter().map(|e| e.total_size()).sum::<usize>()
     }
 
     // Write the full message
