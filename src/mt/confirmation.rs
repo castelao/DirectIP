@@ -80,7 +80,11 @@ impl MessageStatus {
         wtr.write_i16::<BigEndian>(status)?;
         Ok(2)
     }
+
+    fn is_successful(&self) -> bool {}
 }
+
+impl std::fmt::Display for MessageStatus {}
 
 #[derive(Builder, Debug)]
 #[builder(pattern = "owned", build_fn(error = "crate::error::Error"))]

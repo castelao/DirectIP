@@ -209,20 +209,21 @@ impl MTMessage {
     }
 
     /// Parse bytes from a buffer to compose an MTMessage
-    pub(super) fn from_reader<R: std::io::Read>(mut rdr: R) -> Result<Self, Error> {
+    pub fn from_reader<R: std::io::Read>(mut rdr: R) -> Result<Self, Error> {
         // Protocol version
         let version = rdr.read_u8()?;
         // Expects version 1
         assert_eq!(version, 1);
         // Message total length
-        let length = rdr.read_u16::<BigEndian>().expect("Failed to read length");
+        let length = rdr.read_u16::<BigEndian>().expect("Failed to read length") as usize;
 
-        let mut msg = MTMessage::new();
-        let element =
-            InformationElement::from_reader(rdr).expect("Problems reading Information Element");
-        msg.push(element);
-        // For now, it expects a message with a single element.
-        assert_eq!(msg.total_size(), (length as usize + 3));
+        let mut msg = Self::new();
+        let mut n = 0;
+        while n < length {
+            let element = InformationElement::from_reader(&mut rdr)?;
+            n += element.total_size();
+            msg.push(element);
+        }
 
         Ok(msg)
     }
@@ -258,6 +259,23 @@ impl MTMessage {
         Ok(msg)
     }
     */
+
+    fn confirmation(&self) -> Option<&Confirmation> {
+        self.elements
+            .iter()
+            .find(|elem| matches!(elem, InformationElement::C(_)))
+            .map(|e| {
+                if let InformationElement::C(c) = e {
+                    c
+                } else {
+                    unreachable!()
+                }
+            })
+    }
+
+    pub fn confirmation_message(&self) -> Option<String> {
+        self.confirmation().map(|v| v.message_status().to_string())
+    }
 }
 
 #[cfg(test)]
