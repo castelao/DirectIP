@@ -81,7 +81,13 @@ impl MessageStatus {
         Ok(2)
     }
 
-    fn is_successful(&self) -> bool {}
+    /// True if message delivery was confirmed
+    fn is_successful(&self) -> bool {
+        match self {
+            MessageStatus::SuccessfulQueueOrder(_) => true,
+            _ => false,
+        }
+    }
 }
 
 impl std::fmt::Display for MessageStatus {
