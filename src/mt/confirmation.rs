@@ -84,7 +84,39 @@ impl MessageStatus {
     fn is_successful(&self) -> bool {}
 }
 
-impl std::fmt::Display for MessageStatus {}
+impl std::fmt::Display for MessageStatus {
+    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
+        match self {
+            MessageStatus::SuccessfulQueueOrder(n) => write!(
+                f,
+                "Success, message received and in position {} in queue.",
+                n
+            ),
+            MessageStatus::InvalidIMEI => write!(f, "Failed transmission, invalid IMEI"),
+            MessageStatus::UnkownIMEI => write!(f, "Failed transmission, unknown IMEI"),
+            MessageStatus::PayloadOversized => write!(f, "Failed transmission, payload oversized"),
+            MessageStatus::PayloadMissing => write!(f, "Failed transmission, missing payload"),
+            MessageStatus::MTQueueFull => write!(f, "Failed transmission, MT queue is full"),
+            MessageStatus::MTResourcesUnavailable => {
+                write!(f, "Failed transmission, MT resources unavailable")
+            }
+            MessageStatus::ProtocolViolation => {
+                write!(f, "Failed transmission, protocol violation")
+            }
+            MessageStatus::RingAlertsDisabled => {
+                write!(f, "Failed transmission, Ring Alerts disabled")
+            }
+            MessageStatus::SSDNotAttached => write!(f, "Failed transmission, SSD not attached"),
+            MessageStatus::SourceAddressRejected => {
+                write!(f, "Failed transmission, source address rejected")
+            }
+            MessageStatus::MTMSNOutOfRange => write!(f, "Failed transmission, MTMSN out or range"),
+            MessageStatus::CertificateRejected => {
+                write!(f, "Failed transmission, certificate was rejected")
+            }
+        }
+    }
+}
 
 #[derive(Builder, Debug)]
 #[builder(pattern = "owned", build_fn(error = "crate::error::Error"))]
