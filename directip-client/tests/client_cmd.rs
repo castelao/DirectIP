@@ -9,8 +9,8 @@ use assert_fs::prelude::*;
 fn missing_msg_id() -> Result<(), Box<dyn std::error::Error>> {
     let mut cmd = Command::cargo_bin("directip-client")?;
 
-    cmd.args(&["--server=127.0.0.1:10800"])
-        .args(&["--imei=012345678901234"])
+    cmd.args(["--server=127.0.0.1:10800"])
+        .args(["--imei=012345678901234"])
         .arg("42")
         .assert()
         .failure()
@@ -25,8 +25,8 @@ fn missing_msg_id() -> Result<(), Box<dyn std::error::Error>> {
 fn missing_server() -> Result<(), Box<dyn std::error::Error>> {
     let mut cmd = Command::cargo_bin("directip-client")?;
 
-    cmd.args(&["--imei=012345678901234"])
-        .args(&["--msg-id=987"])
+    cmd.args(["--imei=012345678901234"])
+        .args(["--msg-id=987"])
         .arg("42")
         .assert()
         .failure()
@@ -41,8 +41,8 @@ fn missing_server() -> Result<(), Box<dyn std::error::Error>> {
 fn missing_imei() -> Result<(), Box<dyn std::error::Error>> {
     let mut cmd = Command::cargo_bin("directip-client")?;
 
-    cmd.args(&["--server=127.0.0.1:10800"])
-        .args(&["--msg-id=987"])
+    cmd.args(["--server=127.0.0.1:10800"])
+        .args(["--msg-id=987"])
         .arg("42")
         .assert()
         .failure()
@@ -57,10 +57,10 @@ fn missing_imei() -> Result<(), Box<dyn std::error::Error>> {
 fn ascii_inline() -> Result<(), Box<dyn std::error::Error>> {
     let mut cmd = Command::cargo_bin("directip-client")?;
 
-    cmd.args(&["--msg-id=987"])
-        .args(&["--server=127.0.0.1:10800"])
-        .args(&["--imei=012345678901234"])
-        .args(&["--dry-run"])
+    cmd.args(["--msg-id=987"])
+        .args(["--server=127.0.0.1:10800"])
+        .args(["--imei=012345678901234"])
+        .args(["--dry-run"])
         .arg("42")
         .assert()
         .success()
@@ -78,11 +78,11 @@ fn ascii_fromfile() -> Result<(), Box<dyn std::error::Error>> {
 
     let mut cmd = Command::cargo_bin("directip-client")?;
 
-    cmd.args(&["--msg-id=987"])
-        .args(&["--server=127.0.0.1:10800"])
-        .args(&["--imei=012345678901234"])
-        .args(&["--from-file"])
-        .args(&["--dry-run"])
+    cmd.args(["--msg-id=987"])
+        .args(["--server=127.0.0.1:10800"])
+        .args(["--imei=012345678901234"])
+        .args(["--from-file"])
+        .args(["--dry-run"])
         .arg(file.path())
         .assert()
         .success()
@@ -103,12 +103,12 @@ fn binary_fromfile() -> Result<(), Box<dyn std::error::Error>> {
     file.write_binary(&payload)?;
 
     let mut cmd = Command::cargo_bin("directip-client")?;
-    cmd.args(&["--msg-id=987"])
-        .args(&["--server=127.0.0.1:10800"])
-        .args(&["--imei=012345678901234"])
-        .args(&["--encoding=binary"])
-        .args(&["--from-file"])
-        .args(&["--dry-run"])
+    cmd.args(["--msg-id=987"])
+        .args(["--server=127.0.0.1:10800"])
+        .args(["--imei=012345678901234"])
+        .args(["--encoding=binary"])
+        .args(["--from-file"])
+        .args(["--dry-run"])
         .arg(file.path())
         .assert()
         .success()
@@ -123,10 +123,10 @@ fn binary_fromfile() -> Result<(), Box<dyn std::error::Error>> {
 fn ascii_stdin() -> Result<(), Box<dyn std::error::Error>> {
     let mut cmd = Command::cargo_bin("directip-client")?;
 
-    cmd.args(&["--msg-id=987"])
-        .args(&["--server=127.0.0.1:10800"])
-        .args(&["--imei=012345678901234"])
-        .args(&["--dry-run"])
+    cmd.args(["--msg-id=987"])
+        .args(["--server=127.0.0.1:10800"])
+        .args(["--imei=012345678901234"])
+        .args(["--dry-run"])
         .write_stdin("42")
         .assert()
         .success()
@@ -145,10 +145,10 @@ fn binary_stdin() -> Result<(), Box<dyn std::error::Error>> {
     // Confirm that it is an invalid UTF-8
     assert!(std::str::from_utf8(&payload).is_err());
 
-    cmd.args(&["--msg-id=987"])
-        .args(&["--server=127.0.0.1:10800"])
-        .args(&["--imei=012345678901234"])
-        .args(&["--dry-run"])
+    cmd.args(["--msg-id=987"])
+        .args(["--server=127.0.0.1:10800"])
+        .args(["--imei=012345678901234"])
+        .args(["--dry-run"])
         .write_stdin(payload)
         .assert()
         .success()
