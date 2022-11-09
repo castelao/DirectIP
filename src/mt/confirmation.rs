@@ -2,8 +2,8 @@ use super::InformationElementTemplate;
 use crate::error::{Error, Result};
 use byteorder::{BigEndian, ReadBytesExt, WriteBytesExt};
 
-#[derive(Clone, Debug)]
-pub(super) enum MessageStatus {
+#[derive(Clone, Copy, Debug)]
+pub enum MessageStatus {
     // Successful, order of message in the MT message queue starting on 0
     // Currently, the maximum value is 50
     SuccessfulQueueOrder(u8),
@@ -124,7 +124,7 @@ impl std::fmt::Display for MessageStatus {
 
 #[derive(Builder, Debug)]
 #[builder(pattern = "owned", build_fn(error = "crate::error::Error"))]
-pub(super) struct Confirmation {
+pub struct Confirmation {
     // From Client (not MTMSN)
     client_msg_id: u32,
     // ASCII Numeric Characters

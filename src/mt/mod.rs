@@ -260,7 +260,7 @@ impl MTMessage {
     }
     */
 
-    fn confirmation(&self) -> Option<&Confirmation> {
+    pub fn confirmation(&self) -> Option<&Confirmation> {
         self.elements
             .iter()
             .find(|elem| matches!(elem, InformationElement::C(_)))
