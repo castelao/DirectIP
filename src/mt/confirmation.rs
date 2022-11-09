@@ -81,6 +81,7 @@ impl MessageStatus {
         Ok(2)
     }
 
+    #[allow(dead_code)]
     /// True if message delivery was confirmed
     fn is_successful(&self) -> bool {
         matches!(self, MessageStatus::SuccessfulQueueOrder(_))
