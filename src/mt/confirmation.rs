@@ -93,11 +93,9 @@ impl MessageStatus {
 impl std::fmt::Display for MessageStatus {
     fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
         match self {
-            MessageStatus::SuccessfulQueueOrder(n) => write!(
-                f,
-                "Success, message received and in position {} in queue.",
-                n
-            ),
+            MessageStatus::SuccessfulQueueOrder(n) => {
+                write!(f, "Success, queued in position {}.", n)
+            }
             MessageStatus::InvalidIMEI => write!(f, "Failed transmission, invalid IMEI"),
             MessageStatus::UnkownIMEI => write!(f, "Failed transmission, unknown IMEI"),
             MessageStatus::PayloadOversized => write!(f, "Failed transmission, payload oversized"),
