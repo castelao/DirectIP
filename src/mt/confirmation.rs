@@ -187,6 +187,10 @@ impl Confirmation {
         })
     }
 
+    pub fn message_status(&self) -> MessageStatus {
+        self.message_status
+    }
+
     #[allow(dead_code)]
     pub(crate) fn builder() -> ConfirmationBuilder {
         ConfirmationBuilder::default()
