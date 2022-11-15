@@ -120,7 +120,7 @@ impl std::fmt::Display for MessageStatus {
     }
 }
 
-#[derive(Builder, Debug, PartialEq)]
+#[derive(Builder, Debug, PartialEq, Eq)]
 #[builder(pattern = "owned", build_fn(error = "crate::error::Error"))]
 pub struct Confirmation {
     // From Client (not MTMSN)
