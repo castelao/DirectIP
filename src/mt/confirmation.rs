@@ -120,7 +120,7 @@ impl std::fmt::Display for MessageStatus {
     }
 }
 
-#[derive(Builder, Debug)]
+#[derive(Builder, Debug, PartialEq)]
 #[builder(pattern = "owned", build_fn(error = "crate::error::Error"))]
 pub struct Confirmation {
     // From Client (not MTMSN)
@@ -223,7 +223,9 @@ mod test_mt_confirmation {
 
 #[cfg(test)]
 mod test_mt_confirmation_builder {
-    use super::{ConfirmationBuilder, Error, InformationElementTemplate, MessageStatus};
+    use super::{
+        Confirmation, ConfirmationBuilder, Error, InformationElementTemplate, MessageStatus,
+    };
 
     #[test]
     fn build_missing_required() {
@@ -248,6 +250,21 @@ mod test_mt_confirmation_builder {
         assert_eq!(
             MessageStatus::SuccessfulQueueOrder(7),
             confirmation.message_status()
+        );
+    }
+
+    #[test]
+    fn roundtrip_write_n_read() {
+        let confirmation = Confirmation {
+            client_msg_id: 9999,
+            imei: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14],
+            id_reference: 4294967295,
+            message_status: MessageStatus::SuccessfulQueueOrder(42),
+        };
+
+        assert_eq!(
+            confirmation,
+            Confirmation::from_reader(confirmation.to_vec().as_slice()).unwrap()
         );
     }
 }
