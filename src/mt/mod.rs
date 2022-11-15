@@ -280,9 +280,22 @@ impl MTMessage {
 
 #[cfg(test)]
 mod test_mt_message {
+    use super::MTMessage;
 
     #[test]
     fn to_vec() {}
+
+    #[test]
+    // Could improve this test with some checks on the output of from_reader()
+    fn confirmation_from_reader() {
+        let buffer = [
+            0x01, 0x00, 0x1c, 0x44, 0x00, 0x19, 0x00, 0x00, 0x04, 0x57, 0x00, 0x01, 0x02, 0x03,
+            0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0a, 0x0b, 0x0c, 0x0d, 0x0e, 0x00, 0x00, 0x00,
+            0x00, 0x00, 0x2a,
+        ];
+
+        MTMessage::from_reader(&buffer[..]).unwrap();
+    }
 }
 
 pub struct MTMessageBuilder {
