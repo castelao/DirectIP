@@ -71,3 +71,22 @@ impl SessionStatus {
         Ok(1)
     }
 }
+
+impl std::fmt::Display for SessionStatus {
+    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
+        match self {
+            SessionStatus::Success => write!(f, "Session completed successfully"),
+            SessionStatus::MTTooLarge => {
+                write!(f, "MO transfer success, but MT message is too large")
+            }
+            SessionStatus::BadLocation => write!(f, "MO transfer success, but bad locaton"),
+            SessionStatus::Timeout => write!(f, "Session timed out before completion"),
+            SessionStatus::MOTooLarge => write!(f, "MO message too large"),
+            SessionStatus::RFLoss => write!(f, "Lost connection during session"),
+            SessionStatus::SSDAnomaly => write!(f, "Device protocol anomaly"),
+            SessionStatus::SSDProhibited => {
+                write!(f, "Device prohibited from acessing the Gateway")
+            }
+        }
+    }
+}
