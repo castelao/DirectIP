@@ -16,6 +16,7 @@ default-members = [".", "directip-client"]
 
 [dependencies]
 byteorder = "1"
+chrono = "0.4.23"
 log = "0.4"
 thiserror = "1.0"
 derive_builder = "0.11.2"

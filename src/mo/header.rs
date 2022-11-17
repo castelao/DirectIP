@@ -6,8 +6,9 @@
 
 use crate::error::Error;
 use byteorder::{BigEndian, ReadBytesExt, WriteBytesExt};
+use chrono::{DateTime, Utc};
 
-#[derive(Debug)]
+#[derive(Debug, PartialEq)]
 /// Session Status
 ///
 /// Status:
@@ -89,4 +90,31 @@ impl std::fmt::Display for SessionStatus {
             }
         }
     }
+}
+
+#[derive(Builder, Debug, PartialEq)]
+#[builder(pattern = "owned", build_fn(error = "crate::error::Error"))]
+/// Mobile Originated Header
+///
+/// IEI: 0x01
+///
+/// Fixed total size of 28 bytes.
+///
+/// # Components
+///
+/// * CDR Reference (Auto ID): A 4-byte unique ID for each call data
+///   record (CDR).
+/// * IMEI: Equipment identifier of the MT message destination. This is a
+///   unique 15-digit number in ASCII format.
+/// * Session Status:
+/// * MOMSN
+/// * MTMSN
+/// * Time of Session
+struct Header {
+    cdr_id: u32,
+    imei: [u8; 15],
+    session_status: SessionStatus,
+    momsn: u16,
+    mtmsn: u16,
+    time_of_session: DateTime<Utc>,
 }
