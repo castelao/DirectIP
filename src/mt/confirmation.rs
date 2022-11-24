@@ -2,7 +2,7 @@ use super::InformationElementTemplate;
 use crate::error::{Error, Result};
 use byteorder::{BigEndian, ReadBytesExt, WriteBytesExt};
 
-#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+#[derive(Clone, Debug, PartialEq, Eq)]
 pub enum MessageStatus {
     // Successful, order of message in the MT message queue starting on 0
     // Currently, the maximum value is 50
@@ -185,8 +185,8 @@ impl Confirmation {
         })
     }
 
-    pub fn message_status(&self) -> MessageStatus {
-        self.message_status
+    pub fn message_status(&self) -> &MessageStatus {
+        &self.message_status
     }
 
     #[allow(dead_code)]
@@ -248,7 +248,7 @@ mod test_mt_confirmation_builder {
 
         assert_eq!(0x44, confirmation.identifier());
         assert_eq!(
-            MessageStatus::SuccessfulQueueOrder(7),
+            &MessageStatus::SuccessfulQueueOrder(7),
             confirmation.message_status()
         );
     }
