@@ -230,10 +230,10 @@ mod test_mt_confirmation_builder {
     #[test]
     fn build_missing_required() {
         let confirmation = ConfirmationBuilder::default().build();
-        match confirmation {
-            Err(Error::UninitializedFieldError(_)) => (),
-            _ => panic!(),
-        }
+        assert!(matches!(
+            confirmation,
+            Err(Error::UninitializedFieldError(_))
+        ))
     }
 
     #[test]
