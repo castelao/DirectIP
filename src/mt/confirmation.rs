@@ -2,8 +2,8 @@ use super::InformationElementTemplate;
 use crate::error::{Error, Result};
 use byteorder::{BigEndian, ReadBytesExt, WriteBytesExt};
 
-#[derive(Debug)]
-enum MessageStatus {
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub enum MessageStatus {
     // Successful, order of message in the MT message queue starting on 0
     // Currently, the maximum value is 50
     SuccessfulQueueOrder(u8),
@@ -80,10 +80,49 @@ impl MessageStatus {
         wtr.write_i16::<BigEndian>(status)?;
         Ok(2)
     }
+
+    #[allow(dead_code)]
+    /// True if message delivery was confirmed
+    fn is_successful(&self) -> bool {
+        matches!(self, MessageStatus::SuccessfulQueueOrder(_))
+    }
 }
 
-#[derive(Debug)]
-pub(super) struct Confirmation {
+impl std::fmt::Display for MessageStatus {
+    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
+        match self {
+            MessageStatus::SuccessfulQueueOrder(n) => {
+                write!(f, "Success, queued in position {}.", n)
+            }
+            MessageStatus::InvalidIMEI => write!(f, "Failed transmission, invalid IMEI"),
+            MessageStatus::UnkownIMEI => write!(f, "Failed transmission, unknown IMEI"),
+            MessageStatus::PayloadOversized => write!(f, "Failed transmission, payload oversized"),
+            MessageStatus::PayloadMissing => write!(f, "Failed transmission, missing payload"),
+            MessageStatus::MTQueueFull => write!(f, "Failed transmission, MT queue is full"),
+            MessageStatus::MTResourcesUnavailable => {
+                write!(f, "Failed transmission, MT resources unavailable")
+            }
+            MessageStatus::ProtocolViolation => {
+                write!(f, "Failed transmission, protocol violation")
+            }
+            MessageStatus::RingAlertsDisabled => {
+                write!(f, "Failed transmission, Ring Alerts disabled")
+            }
+            MessageStatus::SSDNotAttached => write!(f, "Failed transmission, SSD not attached"),
+            MessageStatus::SourceAddressRejected => {
+                write!(f, "Failed transmission, source address rejected")
+            }
+            MessageStatus::MTMSNOutOfRange => write!(f, "Failed transmission, MTMSN out or range"),
+            MessageStatus::CertificateRejected => {
+                write!(f, "Failed transmission, certificate was rejected")
+            }
+        }
+    }
+}
+
+#[derive(Builder, Debug, PartialEq, Eq)]
+#[builder(pattern = "owned", build_fn(error = "crate::error::Error"))]
+pub struct Confirmation {
     // From Client (not MTMSN)
     client_msg_id: u32,
     // ASCII Numeric Characters
@@ -145,6 +184,15 @@ impl Confirmation {
             message_status,
         })
     }
+
+    pub fn message_status(&self) -> &MessageStatus {
+        &self.message_status
+    }
+
+    #[allow(dead_code)]
+    pub(crate) fn builder() -> ConfirmationBuilder {
+        ConfirmationBuilder::default()
+    }
 }
 
 #[cfg(test)]
@@ -169,6 +217,54 @@ mod test_mt_confirmation {
                 0x44, 0x00, 0x19, 0x00, 0x00, 0x27, 0x0f, 0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06,
                 0x07, 0x08, 0x09, 0x0a, 0x0b, 0x0c, 0x0d, 0x0e, 0xff, 0xff, 0xff, 0xff, 0xff, 0xf5
             ]
+        );
+    }
+}
+
+#[cfg(test)]
+mod test_mt_confirmation_builder {
+    use super::{
+        Confirmation, ConfirmationBuilder, Error, InformationElementTemplate, MessageStatus,
+    };
+
+    #[test]
+    fn build_missing_required() {
+        let confirmation = ConfirmationBuilder::default().build();
+        assert!(matches!(
+            confirmation,
+            Err(Error::UninitializedFieldError(_))
+        ))
+    }
+
+    #[test]
+    fn build() {
+        let confirmation = ConfirmationBuilder::default()
+            .client_msg_id(9999)
+            .imei([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 1, 2, 3, 4])
+            .id_reference(0)
+            .message_status(MessageStatus::SuccessfulQueueOrder(7))
+            .build()
+            .unwrap();
+
+        assert_eq!(0x44, confirmation.identifier());
+        assert_eq!(
+            &MessageStatus::SuccessfulQueueOrder(7),
+            confirmation.message_status()
+        );
+    }
+
+    #[test]
+    fn roundtrip_write_n_read() {
+        let confirmation = Confirmation {
+            client_msg_id: 9999,
+            imei: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14],
+            id_reference: 4294967295,
+            message_status: MessageStatus::SuccessfulQueueOrder(42),
+        };
+
+        assert_eq!(
+            confirmation,
+            Confirmation::from_reader(confirmation.to_vec().as_slice()).unwrap()
         );
     }
 }

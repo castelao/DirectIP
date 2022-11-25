@@ -183,7 +183,7 @@ impl MTMessage {
     }
 
     fn total_size(&self) -> usize {
-        3 + usize::from(self.len())
+        3 + self.elements.iter().map(|e| e.total_size()).sum::<usize>()
     }
 
     // Write the full message
@@ -206,6 +206,26 @@ impl MTMessage {
         self.write(&mut buffer)
             .expect("Failed to write Information Element to a vec.");
         buffer
+    }
+
+    /// Parse bytes from a buffer to compose an MTMessage
+    pub fn from_reader<R: std::io::Read>(mut rdr: R) -> Result<Self, Error> {
+        // Protocol version
+        let version = rdr.read_u8()?;
+        // Expects version 1
+        assert_eq!(version, 1);
+        // Message total length
+        let length = rdr.read_u16::<BigEndian>().expect("Failed to read length") as usize;
+
+        let mut msg = Self::new();
+        let mut n = 0;
+        while n < length {
+            let element = InformationElement::from_reader(&mut rdr)?;
+            n += element.total_size();
+            msg.push(element);
+        }
+
+        Ok(msg)
     }
 
     fn new() -> MTMessage {
@@ -239,13 +259,43 @@ impl MTMessage {
         Ok(msg)
     }
     */
+
+    fn confirmation(&self) -> Option<&Confirmation> {
+        self.elements
+            .iter()
+            .find(|elem| matches!(elem, InformationElement::C(_)))
+            .map(|e| {
+                if let InformationElement::C(c) = e {
+                    c
+                } else {
+                    unreachable!()
+                }
+            })
+    }
+
+    pub fn confirmation_message(&self) -> Option<String> {
+        self.confirmation().map(|v| v.message_status().to_string())
+    }
 }
 
 #[cfg(test)]
 mod test_mt_message {
+    use super::MTMessage;
 
     #[test]
     fn to_vec() {}
+
+    #[test]
+    // Could improve this test with some checks on the output of from_reader()
+    fn confirmation_from_reader() {
+        let buffer = [
+            0x01, 0x00, 0x1c, 0x44, 0x00, 0x19, 0x00, 0x00, 0x04, 0x57, 0x00, 0x01, 0x02, 0x03,
+            0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0a, 0x0b, 0x0c, 0x0d, 0x0e, 0x00, 0x00, 0x00,
+            0x00, 0x00, 0x2a,
+        ];
+
+        MTMessage::from_reader(&buffer[..]).unwrap();
+    }
 }
 
 pub struct MTMessageBuilder {

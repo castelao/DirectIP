@@ -152,6 +152,10 @@ fn main() -> anyhow::Result<()> {
         let mut buffer = [0u8; 56];
         let n = stream.read(&mut buffer).unwrap();
         info!("Confirmation: {:02x?}", &buffer[..n]);
+
+        let response = MTMessage::from_reader(buffer.as_slice())
+            .expect("Gateway response is not a valid MT-Message");
+        info!("{}", response.confirmation_message().unwrap());
     }
 
     Ok(())

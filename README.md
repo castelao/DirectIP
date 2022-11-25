@@ -2,13 +2,23 @@
 
 Iridium's Direct-IP protocol of Short Burst Data communication system.
 
-This crate is focused on transmitting Mobile Terminated messages, often used
-to send commands to a remote station. For instance, it could be used to
-communicate with an under water glider (a scientific autonomous robot).
+This library understands and handles the Direct-IP protocol, thus providing
+the core support for applications such as the one listed below.
+
+## Applications
+
+- [directip-client](https://crates.io/crates/directip-client): Compose and
+  transmit MT messages, i.e. to remote station. For instance, it could be
+  used to send a message to an underwater glider (a scientific autonomous
+  robot).
+
+- [directip-dump](https://crates.io/crates/directip-dump): Parse and extract
+  components, such as the IMEI or message-id, from a Direct-IP binary
+  transmission. This is an equivalent to ncdump but for Direct-IP messages.
 
 ## Minimum supported Rust version
 
-Currently the minimum supported Rust version is 1.57.0
+Currently the minimum supported Rust version is 1.64.0
 
 ## License
 
