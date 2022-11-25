@@ -155,10 +155,7 @@ fn main() -> anyhow::Result<()> {
 
         let response = MTMessage::from_reader(buffer.as_slice())
             .expect("Gateway response is not a valid MT-Message");
-        let confirmation = response.confirmation().unwrap();
-        // Eventually remove this print and set a default stdout log
-        println!("{}", confirmation.message_status());
-        info!("{}", confirmation.message_status());
+        info!("{}", response.confirmation_message().unwrap());
     }
 
     Ok(())
