@@ -49,7 +49,7 @@ impl SessionStatus {
     /// Parse a DispositionFlags from a Read trait
     fn from_reader<R: std::io::Read>(mut rdr: R) -> Result<Self, Error> {
         let status = rdr.read_u8()?;
-        Ok(SessionStatus::decode(&status)?)
+        SessionStatus::decode(&status)
     }
 
     /// Encode a SessionStatus into an u8
