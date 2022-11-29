@@ -92,6 +92,82 @@ impl std::fmt::Display for SessionStatus {
     }
 }
 
+#[cfg(test)]
+mod test_session_status {
+    use super::Error;
+    use super::SessionStatus;
+
+    #[test]
+    fn decode() {
+        match SessionStatus::decode(&0x00) {
+            Ok(SessionStatus::Success) => SessionStatus::Success,
+            Err(error) => panic!("Error: {:?}", error),
+            _ => panic!("Decoded wrong session status"),
+        };
+        match SessionStatus::decode(&0x01) {
+            Ok(SessionStatus::MTTooLarge) => SessionStatus::MTTooLarge,
+            Err(error) => panic!("Error: {:?}", error),
+            _ => panic!("Decoded wrong session status"),
+        };
+        match SessionStatus::decode(&0x02) {
+            Ok(SessionStatus::BadLocation) => SessionStatus::BadLocation,
+            Err(error) => panic!("Error: {:?}", error),
+            _ => panic!("Decoded wrong session status"),
+        };
+        match SessionStatus::decode(&0x0a) {
+            Ok(SessionStatus::Timeout) => SessionStatus::Timeout,
+            Err(error) => panic!("Error: {:?}", error),
+            _ => panic!("Decoded wrong session status"),
+        };
+        match SessionStatus::decode(&0x0b) {
+            Err(Error::InvalidSessionStatus(0x0b)) => (),
+            Err(error) => panic!("Error: {:?}", error),
+            _ => panic!("Decoded wrong session status"),
+        };
+        match SessionStatus::decode(&0x0c) {
+            Ok(SessionStatus::MOTooLarge) => SessionStatus::MOTooLarge,
+            Err(error) => panic!("Error: {:?}", error),
+            _ => panic!("Decoded wrong session status"),
+        };
+        match SessionStatus::decode(&0x0d) {
+            Ok(SessionStatus::RFLoss) => SessionStatus::RFLoss,
+            Err(error) => panic!("Error: {:?}", error),
+            _ => panic!("Decoded wrong session status"),
+        };
+        match SessionStatus::decode(&0x0e) {
+            Ok(SessionStatus::SSDAnomaly) => SessionStatus::SSDAnomaly,
+            Err(error) => panic!("Error: {:?}", error),
+            _ => panic!("Decoded wrong session status"),
+        };
+        match SessionStatus::decode(&0x0f) {
+            Ok(SessionStatus::SSDProhibited) => SessionStatus::SSDProhibited,
+            Err(error) => panic!("Error: {:?}", error),
+            _ => panic!("Decoded wrong session status"),
+        };
+        match SessionStatus::decode(&0x10) {
+            Err(Error::InvalidSessionStatus(0x10)) => (),
+            Err(error) => panic!("Error: {:?}", error),
+            _ => panic!("Decoded wrong session status"),
+        };
+    }
+
+    #[test]
+    fn roundtrip_decode_encode() {
+        let combinations = vec![0, 1, 2, 10, 12, 13, 14, 15];
+        for i in combinations {
+            assert_eq!(i, SessionStatus::decode(&i).unwrap().encode())
+        }
+    }
+
+    #[test]
+    // Expand this. Maybe replace with a read/write roundtrip
+    fn read() {
+        let buffer = [0x00].as_slice();
+        let status = SessionStatus::from_reader(buffer).unwrap();
+        assert_eq!(status, SessionStatus::Success);
+    }
+}
+
 #[derive(Builder, Debug, PartialEq)]
 #[builder(pattern = "owned", build_fn(error = "crate::error::Error"))]
 /// Mobile Originated Header
