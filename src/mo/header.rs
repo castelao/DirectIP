@@ -6,7 +6,7 @@
 
 use crate::error::Error;
 use byteorder::{BigEndian, ReadBytesExt, WriteBytesExt};
-use chrono::{DateTime, Utc};
+use chrono::{DateTime, TimeZone, Utc};
 
 #[derive(Debug, PartialEq)]
 /// Session Status
@@ -193,6 +193,38 @@ struct Header {
     momsn: u16,
     mtmsn: u16,
     time_of_session: DateTime<Utc>,
+}
+
+impl Header {
+    #[allow(dead_code)]
+    // Import a Header from a Read trait
+    fn from_reader<R: std::io::Read>(mut rdr: R) -> Result<Header, Error> {
+        let iei = rdr.read_u8()?;
+        assert_eq!(iei, 0x01);
+        let len = rdr.read_u16::<BigEndian>()?;
+        assert_eq!(len, 28);
+
+        let cdr_uid = rdr.read_u32::<BigEndian>()?;
+
+        let mut imei = [0; 15];
+        rdr.read_exact(&mut imei)?;
+
+        let session_status = SessionStatus::from_reader(&mut rdr)?;
+        let momsn = rdr.read_u16::<BigEndian>()?;
+        let mtmsn = rdr.read_u16::<BigEndian>()?;
+
+        let dt = rdr.read_u32::<BigEndian>()?;
+        let time_of_session = Utc.timestamp_opt(dt.into(), 0).single().unwrap();
+
+        Ok(Header {
+            cdr_uid,
+            imei,
+            session_status,
+            momsn,
+            mtmsn,
+            time_of_session,
+        })
+    }
 }
 
 #[cfg(test)]
