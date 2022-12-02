@@ -187,10 +187,35 @@ mod test_session_status {
 /// * MTMSN
 /// * Time of Session
 struct Header {
-    cdr_id: u32,
+    cdr_uid: u32,
     imei: [u8; 15],
     session_status: SessionStatus,
     momsn: u16,
     mtmsn: u16,
     time_of_session: DateTime<Utc>,
+}
+
+#[cfg(test)]
+mod test_header_builder {
+    use super::{Error, HeaderBuilder, SessionStatus, Utc};
+
+    #[test]
+    fn build_missing_required() {
+        let header = HeaderBuilder::default().build();
+        assert!(matches!(header, Err(Error::UninitializedFieldError(_))))
+    }
+
+    #[test]
+    fn build() {
+        let header = HeaderBuilder::default()
+            .cdr_uid(9999)
+            .imei([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 1, 2, 3, 4])
+            .session_status(SessionStatus::Success)
+            .momsn(999)
+            .mtmsn(9999)
+            .time_of_session(Utc::now())
+            .build()
+            .unwrap();
+        assert_eq!(9999, header.cdr_uid);
+    }
 }
