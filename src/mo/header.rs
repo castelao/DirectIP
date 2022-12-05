@@ -238,7 +238,7 @@ impl Header {
 
     /// MT-Header identifier
     fn identifier(&self) -> u8 {
-        0x41
+        0x01
     }
 
     // Header length field
