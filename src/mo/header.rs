@@ -235,6 +235,11 @@ impl Header {
     fn builder() -> HeaderBuilder {
         HeaderBuilder::default()
     }
+
+    /// MT-Header identifier
+    fn identifier(&self) -> u8 {
+        0x41
+    }
 }
 
 #[cfg(test)]
