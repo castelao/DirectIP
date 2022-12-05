@@ -225,6 +225,11 @@ impl Header {
             time_of_session,
         })
     }
+
+    #[allow(dead_code)]
+    fn imei(self) -> [u8; 15] {
+        self.imei
+    }
 }
 
 #[cfg(test)]
