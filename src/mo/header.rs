@@ -230,6 +230,11 @@ impl Header {
     fn imei(self) -> [u8; 15] {
         self.imei
     }
+
+    #[allow(dead_code)]
+    fn builder() -> HeaderBuilder {
+        HeaderBuilder::default()
+    }
 }
 
 #[cfg(test)]
