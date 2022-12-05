@@ -248,6 +248,25 @@ impl Header {
     fn len(&self) -> u16 {
         21
     }
+
+    /// Export a Header using a Write trait
+    fn write<W: std::io::Write>(&self, wtr: &mut W) -> Result<usize, Error> {
+        wtr.write_u8(0x01)?;
+        wtr.write_u16::<BigEndian>(28)?;
+        wtr.write_u32::<BigEndian>(self.cdr_uid)?;
+        wtr.write_all(&self.imei)?;
+        let n = self.session_status.write(wtr)?;
+        debug_assert_eq!(n, 1);
+        wtr.write_u16::<BigEndian>(self.momsn)?;
+        wtr.write_u16::<BigEndian>(self.mtmsn)?;
+        wtr.write_u32::<BigEndian>(
+            self.time_of_session
+                .timestamp()
+                .try_into()
+                .expect("Can't handle time before 1970"),
+        )?;
+        Ok(28)
+    }
 }
 
 #[cfg(test)]
