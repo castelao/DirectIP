@@ -240,6 +240,14 @@ impl Header {
     fn identifier(&self) -> u8 {
         0x41
     }
+
+    // Header length field
+    //
+    // This is a fixed value for the Header, but used to keep consistency with the
+    // other IEI.
+    fn len(&self) -> u16 {
+        21
+    }
 }
 
 #[cfg(test)]
