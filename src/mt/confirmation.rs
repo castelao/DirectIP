@@ -1,5 +1,5 @@
-use super::InformationElementTemplate;
 use crate::error::{Error, Result};
+use crate::InformationElementTemplate;
 use byteorder::{BigEndian, ReadBytesExt, WriteBytesExt};
 
 #[derive(Clone, Debug, PartialEq, Eq)]

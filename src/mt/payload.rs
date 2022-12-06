@@ -1,8 +1,8 @@
 //! Mobile Terminated - Payload
 //!
 
-use super::InformationElementTemplate;
 use crate::error::{Error, Result};
+use crate::InformationElementTemplate;
 use byteorder::{BigEndian, ReadBytesExt, WriteBytesExt};
 use log::debug;
 

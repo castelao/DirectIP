@@ -5,7 +5,7 @@
 //! element identifier (IEI) with value 0x41.
 
 use crate::error::Error;
-use crate::mt::InformationElementTemplate;
+use crate::InformationElementTemplate;
 use byteorder::{BigEndian, ReadBytesExt, WriteBytesExt};
 
 #[derive(Builder, Clone, Debug, PartialEq, Eq)]
