@@ -235,7 +235,10 @@ impl Header {
     fn builder() -> HeaderBuilder {
         HeaderBuilder::default()
     }
+}
 
+//#[allow(dead_code)]
+impl InformationElementTemplate for Header {
     /// MT-Header identifier
     fn identifier(&self) -> u8 {
         0x01
