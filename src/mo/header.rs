@@ -273,6 +273,51 @@ impl InformationElementTemplate for Header {
 }
 
 #[cfg(test)]
+mod test_mt_header {
+    use super::{DateTime, Header, InformationElementTemplate, SessionStatus, Utc};
+
+    #[test]
+    fn header_write() {
+        let header = Header {
+            cdr_uid: 9999,
+            imei: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14],
+            session_status: SessionStatus::Success,
+            momsn: 999,
+            mtmsn: 111,
+            time_of_session: "2000-03-14T12:12:12Z".parse::<DateTime<Utc>>().unwrap(),
+        };
+        let mut msg = vec![];
+        let n = header.write(&mut msg);
+        // Total size is always 28
+        assert_eq!(n.unwrap(), 28);
+        assert_eq!(
+            msg,
+            [
+                0x01, 0x00, 0x1c, 0x00, 0x00, 0x27, 0x0f, 0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06,
+                0x07, 0x08, 0x09, 0x0a, 0x0b, 0x0c, 0x0d, 0x0e, 0x00, 0x03, 0xe7, 0x00, 0x6f, 0x38,
+                0xce, 0x2c, 0x9c
+            ]
+        );
+    }
+
+    #[test]
+    fn roundtrip_to_vec_n_read() {
+        let header = Header {
+            cdr_uid: 9999,
+            imei: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14],
+            session_status: SessionStatus::Success,
+            momsn: 999,
+            mtmsn: 111,
+            time_of_session: "2000-03-14T12:12:12Z".parse::<DateTime<Utc>>().unwrap(),
+        };
+        assert_eq!(
+            header,
+            Header::from_reader(header.to_vec().as_slice()).unwrap()
+        );
+    }
+}
+
+#[cfg(test)]
 mod test_header_builder {
     use super::{Error, HeaderBuilder, SessionStatus, Utc};
 
