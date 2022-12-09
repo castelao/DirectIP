@@ -4,10 +4,12 @@
 //! compose a mobile originated message. It is defined by an information
 //! element identifier (IEI) with value 0x01.
 
-use crate::error::Error;
-use crate::InformationElementTemplate;
 use byteorder::{BigEndian, ReadBytesExt, WriteBytesExt};
 use chrono::{DateTime, TimeZone, Utc};
+use derive_builder::Builder;
+
+use crate::error::Error;
+use crate::InformationElementTemplate;
 
 #[derive(Debug, PartialEq)]
 /// Session Status

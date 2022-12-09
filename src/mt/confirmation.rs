@@ -1,6 +1,8 @@
+use byteorder::{BigEndian, ReadBytesExt, WriteBytesExt};
+use derive_builder::Builder;
+
 use crate::error::{Error, Result};
 use crate::InformationElementTemplate;
-use byteorder::{BigEndian, ReadBytesExt, WriteBytesExt};
 
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub enum MessageStatus {
