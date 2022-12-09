@@ -18,6 +18,10 @@ pub enum Error {
     #[error("Invalid MessageStatus: {0}")]
     InvalidMessageStatus(i16),
 
+    /// Invalid status for MO::Header::SeessionStatus.
+    #[error("Invalid SessionStatus: {0}")]
+    InvalidSessionStatus(u8),
+
     /// Undefined error
     #[error("Undefined error")]
     Undefined,

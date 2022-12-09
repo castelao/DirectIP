@@ -29,9 +29,7 @@
           inherit system overlays;
         };
         rust = pkgs.rust-bin.stable.latest.default.override {
-          #extensions = [ "rust-src" ];
-          #targets = [ "x86_64-unknown-linux-musl" ];
-          targets = [ "wasm32-wasi" "wasm32-unknown-unknown" "wasm32-unknown-emscripten" ];
+          extensions = [ "rust-src" ];
         };
         naersk-lib = naersk.lib."${system}".override {
           cargo = rust;

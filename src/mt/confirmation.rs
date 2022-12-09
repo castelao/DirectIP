@@ -1,6 +1,8 @@
-use super::InformationElementTemplate;
-use crate::error::{Error, Result};
 use byteorder::{BigEndian, ReadBytesExt, WriteBytesExt};
+use derive_builder::Builder;
+
+use crate::error::{Error, Result};
+use crate::InformationElementTemplate;
 
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub enum MessageStatus {
