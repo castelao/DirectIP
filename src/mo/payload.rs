@@ -117,7 +117,9 @@ mod test_mt_payload {
 
 impl std::fmt::Display for Payload {
     fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
-        write!(f, "Payload Element")
+        write!(f, "Payload Element")?;
+        write!(f, "  len {}", self.len())?;
+        write!(f, "  {:02X?}", self.payload)
     }
 }
 
