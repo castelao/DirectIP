@@ -13,10 +13,15 @@ fn main() {
 
     let rdr = std::fs::File::open(path).expect("Error opening file");
 
+    let msg = directip::Message::from_reader(rdr).unwrap();
+
+    /*
     let msg = match MTMessage::from_reader(rdr) {
         Ok(v) => v,
         Err(_) => todo!("try MOMessage"),
     };
+    */
 
+    dbg!(msg.message_type());
     dbg!(msg);
 }
