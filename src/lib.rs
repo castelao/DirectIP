@@ -28,3 +28,22 @@ trait InformationElement {
         buffer
     }
 }
+
+#[derive(Debug)]
+pub enum Message {
+    // MO(mo::MOMessage),
+    MT(mt::MTMessage),
+}
+
+impl Message {
+    pub fn message_type(&self) -> String {
+        match &self {
+            Message::MT(_) => "MT".to_string(),
+        }
+    }
+
+    pub fn from_reader<R: std::io::Read>(mut rdr: R) -> Result<Self, Error> {
+        let msg = mt::MTMessage::from_reader(rdr)?;
+        Ok(Message::MT(msg))
+    }
+}
