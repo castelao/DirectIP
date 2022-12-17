@@ -25,3 +25,54 @@
 
 mod header;
 mod payload;
+
+use std::io::Read;
+
+use byteorder::ReadBytesExt;
+
+use crate::error::Error;
+use header::Header;
+use payload::Payload;
+
+#[allow(dead_code)]
+#[derive(Debug)]
+enum InformationElementType {
+    H(Header),
+    P(Payload),
+}
+
+impl InformationElementType {
+    fn len(&self) -> u16 {
+        match self {
+            // InformationElementType::H(element) => element.len(),
+            // InformationElementType::P(element) => element.len(),
+            _ => todo!(),
+        }
+    }
+
+    #[allow(dead_code)]
+    /// Parse a InformationElementType from a Read trait
+    pub(super) fn from_reader<R: std::io::Read>(mut rdr: R) -> Result<Self, Error> {
+        let iei = rdr.read_u8()?;
+        let buffer = [iei; 1];
+        let buffer = buffer.chain(rdr);
+        let element = match iei {
+            0x01 => {
+                todo!();
+                // let header = Header::from_reader(buffer).unwrap();
+                // InformationElementType::H(header)
+            }
+            0x02 => {
+                let payload = Payload::from_reader(buffer).unwrap();
+                InformationElementType::P(payload)
+            }
+            _ => return Err(Error::Undefined),
+        };
+        Ok(element)
+    }
+}
+
+#[derive(Debug)]
+pub struct MOMessage {
+    elements: Vec<InformationElementType>,
+}
