@@ -5,6 +5,8 @@ mod error;
 pub mod mo;
 pub mod mt;
 
+use std::io::BufReader;
+
 use crate::error::Error;
 
 trait InformationElement {
@@ -31,19 +33,23 @@ trait InformationElement {
 
 #[derive(Debug)]
 pub enum Message {
-    // MO(mo::MOMessage),
+    MO(mo::MOMessage),
     MT(mt::MTMessage),
 }
 
 impl Message {
     pub fn message_type(&self) -> String {
         match &self {
+            Message::MO(_) => "MO".to_string(),
             Message::MT(_) => "MT".to_string(),
         }
     }
 
     pub fn from_reader<R: std::io::Read>(mut rdr: R) -> Result<Self, Error> {
-        let msg = mt::MTMessage::from_reader(rdr)?;
+        // Do the math for actual maximum possible size
+        // Using BufReader so we can rewind if failed to read the first type
+        let buffer = BufReader::with_capacity(3000, rdr);
+        let msg = mt::MTMessage::from_reader(buffer)?;
         Ok(Message::MT(msg))
     }
 }
