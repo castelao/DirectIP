@@ -17,7 +17,7 @@ use crate::InformationElement;
 /// Status:
 /// * 0: Success
 ///
-enum SessionStatus {
+pub(crate) enum SessionStatus {
     Success,
     MTTooLarge,
     BadLocation,
@@ -189,7 +189,7 @@ mod test_session_status {
 /// * MOMSN
 /// * MTMSN
 /// * Time of Session
-struct Header {
+pub(crate) struct Header {
     cdr_uid: u32,
     imei: [u8; 15],
     session_status: SessionStatus,
