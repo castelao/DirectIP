@@ -45,7 +45,7 @@ impl Message {
         }
     }
 
-    pub fn from_reader<R: std::io::Read>(mut rdr: R) -> Result<Self, Error> {
+    pub fn from_reader<R: std::io::Read>(rdr: R) -> Result<Self, Error> {
         // Do the math for actual maximum possible size
         // Using BufReader so we can rewind if failed to read the first type
         let buffer = BufReader::with_capacity(3000, rdr);
