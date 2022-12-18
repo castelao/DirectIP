@@ -7,7 +7,7 @@ pub mod mt;
 
 use crate::error::Error;
 
-trait InformationElementTemplate {
+trait InformationElement {
     fn identifier(&self) -> u8;
 
     fn len(&self) -> u16;

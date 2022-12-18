@@ -9,7 +9,7 @@ use chrono::{DateTime, TimeZone, Utc};
 use derive_builder::Builder;
 
 use crate::error::Error;
-use crate::InformationElementTemplate;
+use crate::InformationElement;
 
 #[derive(Debug, PartialEq)]
 /// Session Status
@@ -241,7 +241,7 @@ impl Header {
 }
 
 //#[allow(dead_code)]
-impl InformationElementTemplate for Header {
+impl InformationElement for Header {
     /// MT-Header identifier
     fn identifier(&self) -> u8 {
         0x01
@@ -277,7 +277,7 @@ impl InformationElementTemplate for Header {
 
 #[cfg(test)]
 mod test_mt_header {
-    use super::{DateTime, Header, InformationElementTemplate, SessionStatus, Utc};
+    use super::{DateTime, Header, InformationElement, SessionStatus, Utc};
 
     #[test]
     fn header_write() {

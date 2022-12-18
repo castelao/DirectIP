@@ -8,7 +8,7 @@ use byteorder::{BigEndian, ReadBytesExt, WriteBytesExt};
 use derive_builder::Builder;
 
 use crate::error::Error;
-use crate::InformationElementTemplate;
+use crate::InformationElement;
 
 #[derive(Builder, Clone, Debug, PartialEq, Eq)]
 /// Disposition Flags
@@ -337,7 +337,7 @@ impl Header {
 
 // Let's allow dead while still WIP
 #[allow(dead_code)]
-impl InformationElementTemplate for Header {
+impl InformationElement for Header {
     /// MT-Header identifier
     fn identifier(&self) -> u8 {
         0x41
@@ -364,7 +364,7 @@ impl InformationElementTemplate for Header {
 
 #[cfg(test)]
 mod test_mt_header {
-    use super::{DispositionFlags, Header, InformationElementTemplate};
+    use super::{DispositionFlags, Header, InformationElement};
 
     #[test]
     fn header_write() {

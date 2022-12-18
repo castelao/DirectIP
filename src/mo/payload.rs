@@ -6,7 +6,7 @@ use derive_builder::Builder;
 use log::debug;
 
 use crate::error::{Error, Result};
-use crate::InformationElementTemplate;
+use crate::InformationElement;
 
 /// Maximum accepted payload length defined by the Direct-IP protocol
 const MAX_PAYLOAD_LEN: usize = 1960;
@@ -25,7 +25,7 @@ pub(super) struct Payload {
     payload: Vec<u8>,
 }
 
-impl InformationElementTemplate for Payload {
+impl InformationElement for Payload {
     /// Information Element Identifier
     fn identifier(&self) -> u8 {
         0x02
@@ -82,7 +82,7 @@ impl Payload {
 
 #[cfg(test)]
 mod test_mt_payload {
-    use super::{InformationElementTemplate, Payload};
+    use super::{InformationElement, Payload};
 
     #[test]
     fn write() {
@@ -137,7 +137,7 @@ impl PayloadBuilder {
 
 #[cfg(test)]
 mod payload_builder {
-    use super::{Error, InformationElementTemplate, PayloadBuilder, MAX_PAYLOAD_LEN};
+    use super::{Error, InformationElement, PayloadBuilder, MAX_PAYLOAD_LEN};
 
     #[test]
     /// Build Payload without defining fields
