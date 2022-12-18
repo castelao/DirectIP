@@ -28,7 +28,7 @@ mod payload;
 
 use std::io::Read;
 
-use byteorder::{BigEndian, ReadBytesExt, WriteBytesExt};
+use byteorder::{BigEndian, ReadBytesExt};
 
 use crate::error::Error;
 use crate::InformationElement;
@@ -100,12 +100,14 @@ pub struct MOMessage {
 }
 
 impl MOMessage {
+    #[allow(dead_code)]
     fn new() -> MOMessage {
         MOMessage {
             elements: Vec::new(),
         }
     }
 
+    #[allow(dead_code)]
     fn total_size(&self) -> usize {
         3 + self.elements.iter().map(|e| e.total_size()).sum::<usize>()
     }
