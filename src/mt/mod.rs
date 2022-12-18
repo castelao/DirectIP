@@ -160,9 +160,14 @@ pub struct MTMessage {
 // Let's allow dead while still WIP
 #[allow(dead_code)]
 impl MTMessage {
-    // Length of the full message
+    /// Overall Message Length
     fn len(&self) -> u16 {
-        self.elements.iter().map(|e| e.len()).sum()
+        self.elements
+            .iter()
+            .map(|e| e.total_size())
+            .sum::<usize>()
+            .try_into()
+            .unwrap()
     }
 
     fn total_size(&self) -> usize {
