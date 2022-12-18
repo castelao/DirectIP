@@ -199,6 +199,14 @@ pub(crate) struct Header {
 }
 
 impl Header {
+    // Header length field
+    //
+    // This is a fixed value for the Header, but used to keep consistency
+    // with the other IEI.
+    pub fn len(&self) -> u16 {
+        28
+    }
+
     #[allow(dead_code)]
     // Import a Header from a Read trait
     fn from_reader<R: std::io::Read>(mut rdr: R) -> Result<Header, Error> {
