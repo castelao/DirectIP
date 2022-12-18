@@ -31,6 +31,7 @@ use std::io::Read;
 use byteorder::ReadBytesExt;
 
 use crate::error::Error;
+use crate::InformationElement;
 use header::Header;
 use payload::Payload;
 
@@ -41,15 +42,36 @@ enum InformationElementType {
     P(Payload),
 }
 
-impl InformationElementType {
-    fn len(&self) -> u16 {
+impl InformationElement for InformationElementType {
+    fn identifier(&self) -> u8 {
         match self {
-            // InformationElementType::H(element) => element.len(),
-            // InformationElementType::P(element) => element.len(),
-            _ => todo!(),
+            InformationElementType::H(element) => element.identifier(),
+            InformationElementType::P(element) => element.identifier(),
         }
     }
 
+    fn len(&self) -> u16 {
+        match self {
+            InformationElementType::H(element) => element.len(),
+            InformationElementType::P(element) => element.len(),
+        }
+    }
+
+    /// Total size of Information Element in bytes
+    /// This includes the identifier and the field len.
+    fn total_size(&self) -> usize {
+        3 + usize::from(self.len())
+    }
+
+    fn write<W: std::io::Write>(&self, wtr: &mut W) -> Result<usize, Error> {
+        match self {
+            InformationElementType::H(element) => element.write(wtr),
+            InformationElementType::P(element) => element.write(wtr),
+        }
+    }
+}
+
+impl InformationElementType {
     #[allow(dead_code)]
     /// Parse a InformationElementType from a Read trait
     pub(super) fn from_reader<R: std::io::Read>(mut rdr: R) -> Result<Self, Error> {
