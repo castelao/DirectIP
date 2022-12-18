@@ -28,7 +28,7 @@ mod payload;
 
 use std::io::Read;
 
-use byteorder::ReadBytesExt;
+use byteorder::{BigEndian, ReadBytesExt, WriteBytesExt};
 
 use crate::error::Error;
 use crate::InformationElement;
@@ -97,4 +97,44 @@ impl InformationElementType {
 #[derive(Debug)]
 pub struct MOMessage {
     elements: Vec<InformationElementType>,
+}
+
+impl MOMessage {
+    fn new() -> MOMessage {
+        MOMessage {
+            elements: Vec::new(),
+        }
+    }
+
+    fn total_size(&self) -> usize {
+        3 + self.elements.iter().map(|e| e.total_size()).sum::<usize>()
+    }
+
+    /// Parse bytes from a buffer to compose an MTMessage
+    pub fn from_reader<R: std::io::Read>(mut rdr: R) -> Result<Self, Error> {
+        // Protocol version
+        let version = rdr.read_u8()?;
+        // Expects version 1
+        assert_eq!(version, 1);
+        // Message total length
+        let length = rdr.read_u16::<BigEndian>().expect("Failed to read length") as usize;
+
+        let mut msg = MOMessage { elements: vec![] };
+        let mut n = 0;
+        while n < length {
+            let element = InformationElementType::from_reader(&mut rdr)?;
+            n += element.total_size();
+            msg.push(element);
+        }
+
+        Ok(msg)
+    }
+
+    /// Appends an element to the back of an MT-Message
+    ///
+    /// This should be a good place to check for duplicates, i.e. try to
+    /// insert a second header for instance.
+    fn push(&mut self, element: InformationElementType) {
+        self.elements.push(element);
+    }
 }
