@@ -2,7 +2,7 @@ use byteorder::{BigEndian, ReadBytesExt, WriteBytesExt};
 use derive_builder::Builder;
 
 use crate::error::{Error, Result};
-use crate::InformationElementTemplate;
+use crate::InformationElement;
 
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub enum MessageStatus {
@@ -136,7 +136,7 @@ pub struct Confirmation {
     message_status: MessageStatus,
 }
 
-impl InformationElementTemplate for Confirmation {
+impl InformationElement for Confirmation {
     /// Information Element Identifier
     fn identifier(&self) -> u8 {
         0x44
@@ -199,7 +199,7 @@ impl Confirmation {
 
 #[cfg(test)]
 mod test_mt_confirmation {
-    use super::{Confirmation, InformationElementTemplate, MessageStatus};
+    use super::{Confirmation, InformationElement, MessageStatus};
 
     #[test]
     fn confirmation_write() {
@@ -225,9 +225,7 @@ mod test_mt_confirmation {
 
 #[cfg(test)]
 mod test_mt_confirmation_builder {
-    use super::{
-        Confirmation, ConfirmationBuilder, Error, InformationElementTemplate, MessageStatus,
-    };
+    use super::{Confirmation, ConfirmationBuilder, Error, InformationElement, MessageStatus};
 
     #[test]
     fn build_missing_required() {

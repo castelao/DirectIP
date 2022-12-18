@@ -30,48 +30,48 @@ use std::io::Read;
 use byteorder::{BigEndian, ReadBytesExt, WriteBytesExt};
 
 use crate::error::Error;
-use crate::InformationElementTemplate;
+use crate::InformationElement;
 use confirmation::Confirmation;
 use header::{Header, HeaderBuilder};
 use payload::{Payload, PayloadBuilder};
 
 #[allow(dead_code)]
 #[derive(Debug)]
-enum InformationElement {
+enum InformationElementType {
     H(Header),
     P(Payload),
     C(Confirmation),
 }
 
-impl InformationElementTemplate for InformationElement {
+impl InformationElement for InformationElementType {
     fn identifier(&self) -> u8 {
         match self {
-            InformationElement::H(element) => element.identifier(),
-            InformationElement::P(element) => element.identifier(),
-            InformationElement::C(element) => element.identifier(),
+            InformationElementType::H(element) => element.identifier(),
+            InformationElementType::P(element) => element.identifier(),
+            InformationElementType::C(element) => element.identifier(),
         }
     }
 
     fn len(&self) -> u16 {
         match self {
-            InformationElement::H(element) => element.len(),
-            InformationElement::P(element) => element.len(),
-            InformationElement::C(element) => element.len(),
+            InformationElementType::H(element) => element.len(),
+            InformationElementType::P(element) => element.len(),
+            InformationElementType::C(element) => element.len(),
         }
     }
 
     fn write<W: std::io::Write>(&self, wtr: &mut W) -> Result<usize, Error> {
         match self {
-            InformationElement::H(element) => element.write(wtr),
-            InformationElement::P(element) => element.write(wtr),
-            InformationElement::C(element) => element.write(wtr),
+            InformationElementType::H(element) => element.write(wtr),
+            InformationElementType::P(element) => element.write(wtr),
+            InformationElementType::C(element) => element.write(wtr),
         }
     }
 }
 
-impl InformationElement {
+impl InformationElementType {
     #[allow(dead_code)]
-    /// Parse a InformationElement from a Read trait
+    /// Parse a InformationElementType from a Read trait
     pub(super) fn from_reader<R: std::io::Read>(mut rdr: R) -> Result<Self, Error> {
         let iei = rdr.read_u8()?;
         let buffer = [iei; 1];
@@ -79,15 +79,15 @@ impl InformationElement {
         let element = match iei {
             0x41 => {
                 let header = Header::from_reader(buffer).unwrap();
-                InformationElement::H(header)
+                InformationElementType::H(header)
             }
             0x42 => {
                 let payload = Payload::from_reader(buffer).unwrap();
-                InformationElement::P(payload)
+                InformationElementType::P(payload)
             }
             0x44 => {
                 let confirmation = Confirmation::from_reader(buffer).unwrap();
-                InformationElement::C(confirmation)
+                InformationElementType::C(confirmation)
             }
             _ => return Err(Error::Undefined),
         };
@@ -97,7 +97,7 @@ impl InformationElement {
 
 #[cfg(test)]
 mod test_mt_information_element {
-    use crate::mt::InformationElement;
+    use crate::mt::InformationElementType;
 
     #[test]
     // Need improvements to properly test it
@@ -107,31 +107,31 @@ mod test_mt_information_element {
             0x07, 0x08, 0x09, 0x0a, 0x0b, 0x0c, 0x0d, 0x0e, 0x00, 0x3b,
         ]
         .as_slice();
-        let _ie = InformationElement::from_reader(msg).unwrap();
+        let _ie = InformationElementType::from_reader(msg).unwrap();
     }
 }
 
-impl From<Confirmation> for InformationElement {
+impl From<Confirmation> for InformationElementType {
     fn from(confirmation: Confirmation) -> Self {
-        InformationElement::C(confirmation)
+        InformationElementType::C(confirmation)
     }
 }
 
-impl From<Header> for InformationElement {
+impl From<Header> for InformationElementType {
     fn from(header: Header) -> Self {
-        InformationElement::H(header)
+        InformationElementType::H(header)
     }
 }
 
-impl From<Payload> for InformationElement {
+impl From<Payload> for InformationElementType {
     fn from(payload: Payload) -> Self {
-        InformationElement::P(payload)
+        InformationElementType::P(payload)
     }
 }
 
 #[cfg(test)]
 mod test_mt_information_element_from {
-    use crate::mt::{Header, InformationElement, InformationElementTemplate, Payload};
+    use crate::mt::{Header, InformationElement, InformationElementType, Payload};
 
     #[test]
     fn header() {
@@ -140,21 +140,21 @@ mod test_mt_information_element_from {
             .imei([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 1, 2, 3, 4])
             .build()
             .unwrap();
-        let ie = InformationElement::from(header);
+        let ie = InformationElementType::from(header);
         assert!(ie.identifier() == 0x41);
     }
 
     #[test]
     fn payload() {
         let payload = Payload::builder().payload("Hey, it's me!").build().unwrap();
-        let ie = InformationElement::from(payload);
+        let ie = InformationElementType::from(payload);
         assert!(ie.identifier() == 0x42);
     }
 }
 
 #[derive(Debug)]
 pub struct MTMessage {
-    elements: Vec<InformationElement>,
+    elements: Vec<InformationElementType>,
 }
 
 // Let's allow dead while still WIP
@@ -203,7 +203,7 @@ impl MTMessage {
         let mut msg = Self::new();
         let mut n = 0;
         while n < length {
-            let element = InformationElement::from_reader(&mut rdr)?;
+            let element = InformationElementType::from_reader(&mut rdr)?;
             n += element.total_size();
             msg.push(element);
         }
@@ -225,7 +225,7 @@ impl MTMessage {
     ///
     /// This should be a good place to check for duplicates, i.e. try to insert
     /// a second header for instance.
-    fn push(&mut self, element: InformationElement) {
+    fn push(&mut self, element: InformationElementType) {
         self.elements.push(element);
     }
 
@@ -235,7 +235,7 @@ impl MTMessage {
         assert_eq!(version, 1);
         let len = rdr.read_u16::<BigEndian>()?;
         let mut msg = Self::new();
-        while Some(element) = InformationElement::from_reader(rdr).unwrap() {
+        while Some(element) = InformationElementType::from_reader(rdr).unwrap() {
             msg.push(element);
         }
 
@@ -246,9 +246,9 @@ impl MTMessage {
     fn confirmation(&self) -> Option<&Confirmation> {
         self.elements
             .iter()
-            .find(|elem| matches!(elem, InformationElement::C(_)))
+            .find(|elem| matches!(elem, InformationElementType::C(_)))
             .map(|e| {
-                if let InformationElement::C(c) = e {
+                if let InformationElementType::C(c) = e {
                     c
                 } else {
                     unreachable!()
