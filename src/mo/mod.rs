@@ -112,6 +112,16 @@ impl MOMessage {
         }
     }
 
+    /// Overall Message Length
+    fn len(&self) -> u16 {
+        self.elements
+            .iter()
+            .map(|e| e.total_size())
+            .sum::<usize>()
+            .try_into()
+            .unwrap()
+    }
+
     #[allow(dead_code)]
     fn total_size(&self) -> usize {
         3 + self.elements.iter().map(|e| e.total_size()).sum::<usize>()
