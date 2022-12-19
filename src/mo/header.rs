@@ -248,10 +248,10 @@ impl InformationElement for Header {
 
     // Header length field
     //
-    // This is a fixed value for the Header, but used to keep consistency with the
-    // other IEI.
+    // This is a fixed value for the Header, but used to keep consistency with
+    // the other IEI.
     fn len(&self) -> u16 {
-        21
+        28
     }
 
     /// Export a Header using a Write trait
