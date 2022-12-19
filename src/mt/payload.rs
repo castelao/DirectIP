@@ -72,27 +72,16 @@ impl Payload {
             Ok(Payload { payload })
         }
     }
+
     #[allow(dead_code)]
     pub(crate) fn builder() -> PayloadBuilder {
         PayloadBuilder::default()
     }
 }
 
-impl PayloadBuilder {
-    fn validate(&self) -> Result<()> {
-        if let Some(ref payload) = self.payload {
-            if payload.len() > MAX_PAYLOAD_LEN {
-                dbg!(&payload);
-                return Err(Error::Undefined);
-            }
-        }
-        Ok(())
-    }
-}
-
 #[cfg(test)]
 mod test_mt_payload {
-    use super::{Error, InformationElement, Payload, PayloadBuilder, MAX_PAYLOAD_LEN};
+    use super::{InformationElement, Payload};
 
     #[test]
     fn write() {
@@ -123,7 +112,31 @@ mod test_mt_payload {
             assert!(payload.to_vec().len() - 3 == i.into());
         }
     }
+}
 
+impl std::fmt::Display for Payload {
+    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
+        write!(f, "Payload Element")?;
+        write!(f, "  len {}", self.len())?;
+        write!(f, "  {:02X?}", self.payload)
+    }
+}
+
+impl PayloadBuilder {
+    fn validate(&self) -> Result<()> {
+        if let Some(ref payload) = self.payload {
+            if payload.len() > MAX_PAYLOAD_LEN {
+                dbg!(&payload);
+                return Err(Error::Undefined);
+            }
+        }
+        Ok(())
+    }
+}
+
+#[cfg(test)]
+mod payload_builder {
+    use super::{Error, InformationElement, PayloadBuilder, MAX_PAYLOAD_LEN};
     #[test]
     /// Build Payload without defining fields
     fn build_default() {
