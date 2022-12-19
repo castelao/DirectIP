@@ -35,7 +35,6 @@ use confirmation::Confirmation;
 use header::{Header, HeaderBuilder};
 use payload::{Payload, PayloadBuilder};
 
-#[allow(dead_code)]
 #[derive(Debug)]
 enum InformationElementType {
     H(Header),
@@ -70,7 +69,6 @@ impl InformationElement for InformationElementType {
 }
 
 impl InformationElementType {
-    #[allow(dead_code)]
     /// Parse a InformationElementType from a Read trait
     pub(super) fn from_reader<R: std::io::Read>(mut rdr: R) -> Result<Self, Error> {
         let iei = rdr.read_u8()?;
@@ -160,9 +158,20 @@ pub struct MTMessage {
 // Let's allow dead while still WIP
 #[allow(dead_code)]
 impl MTMessage {
-    // Length of the full message
+    fn new() -> MTMessage {
+        MTMessage {
+            elements: Vec::new(),
+        }
+    }
+
+    /// Overall Message Length
     fn len(&self) -> u16 {
-        self.elements.iter().map(|e| e.len()).sum()
+        self.elements
+            .iter()
+            .map(|e| e.total_size())
+            .sum::<usize>()
+            .try_into()
+            .unwrap()
     }
 
     fn total_size(&self) -> usize {
@@ -211,12 +220,6 @@ impl MTMessage {
         Ok(msg)
     }
 
-    fn new() -> MTMessage {
-        MTMessage {
-            elements: Vec::new(),
-        }
-    }
-
     pub fn builder() -> MTMessageBuilder {
         MTMessageBuilder::default()
     }
@@ -228,20 +231,6 @@ impl MTMessage {
     fn push(&mut self, element: InformationElementType) {
         self.elements.push(element);
     }
-
-    /*
-    fn from_reader<R: std::io::Read>(mut rdr: R) -> Result<Self, Error> {
-        let version = rdr.read_u8()?;
-        assert_eq!(version, 1);
-        let len = rdr.read_u16::<BigEndian>()?;
-        let mut msg = Self::new();
-        while Some(element) = InformationElementType::from_reader(rdr).unwrap() {
-            msg.push(element);
-        }
-
-        Ok(msg)
-    }
-    */
 
     fn confirmation(&self) -> Option<&Confirmation> {
         self.elements
