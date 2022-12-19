@@ -48,7 +48,6 @@ impl InformationElement for Payload {
 }
 
 impl Payload {
-    #[allow(dead_code)]
     pub(super) fn from_reader<R: std::io::Read>(mut rdr: R) -> Result<Payload> {
         let iei = rdr.read_u8()?;
         if iei != 0x02 {
@@ -73,6 +72,7 @@ impl Payload {
             Ok(Payload { payload })
         }
     }
+
     #[allow(dead_code)]
     pub(crate) fn builder() -> PayloadBuilder {
         PayloadBuilder::default()
