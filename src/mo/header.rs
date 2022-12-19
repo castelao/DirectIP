@@ -48,7 +48,6 @@ impl SessionStatus {
         }
     }
 
-    #[allow(dead_code)]
     /// Parse a DispositionFlags from a Read trait
     fn from_reader<R: std::io::Read>(mut rdr: R) -> Result<Self, Error> {
         let status = rdr.read_u8()?;
