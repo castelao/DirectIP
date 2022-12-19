@@ -35,7 +35,6 @@ use confirmation::Confirmation;
 use header::{Header, HeaderBuilder};
 use payload::{Payload, PayloadBuilder};
 
-#[allow(dead_code)]
 #[derive(Debug)]
 enum InformationElementType {
     H(Header),
@@ -70,7 +69,6 @@ impl InformationElement for InformationElementType {
 }
 
 impl InformationElementType {
-    #[allow(dead_code)]
     /// Parse a InformationElementType from a Read trait
     pub(super) fn from_reader<R: std::io::Read>(mut rdr: R) -> Result<Self, Error> {
         let iei = rdr.read_u8()?;
@@ -233,20 +231,6 @@ impl MTMessage {
     fn push(&mut self, element: InformationElementType) {
         self.elements.push(element);
     }
-
-    /*
-    fn from_reader<R: std::io::Read>(mut rdr: R) -> Result<Self, Error> {
-        let version = rdr.read_u8()?;
-        assert_eq!(version, 1);
-        let len = rdr.read_u16::<BigEndian>()?;
-        let mut msg = Self::new();
-        while Some(element) = InformationElementType::from_reader(rdr).unwrap() {
-            msg.push(element);
-        }
-
-        Ok(msg)
-    }
-    */
 
     fn confirmation(&self) -> Option<&Confirmation> {
         self.elements
