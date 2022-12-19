@@ -74,9 +74,8 @@ impl InformationElementType {
         let buffer = buffer.chain(rdr);
         let element = match iei {
             0x01 => {
-                todo!();
-                // let header = Header::from_reader(buffer).unwrap();
-                // InformationElementType::H(header)
+                let header = Header::from_reader(buffer).unwrap();
+                InformationElementType::H(header)
             }
             0x02 => {
                 let payload = Payload::from_reader(buffer).unwrap();
