@@ -288,10 +288,7 @@ mod test_mt_header {
             mtmsn: 111,
             time_of_session: "2000-03-14T12:12:12Z".parse::<DateTime<Utc>>().unwrap(),
         };
-        let mut msg = vec![];
-        let n = header.write(&mut msg);
-        // Total size is always 28
-        assert_eq!(n.unwrap(), 28);
+        let msg = header.to_vec();
         assert_eq!(
             msg,
             [
