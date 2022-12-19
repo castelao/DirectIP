@@ -158,6 +158,12 @@ pub struct MTMessage {
 // Let's allow dead while still WIP
 #[allow(dead_code)]
 impl MTMessage {
+    fn new() -> MTMessage {
+        MTMessage {
+            elements: Vec::new(),
+        }
+    }
+
     /// Overall Message Length
     fn len(&self) -> u16 {
         self.elements
@@ -212,12 +218,6 @@ impl MTMessage {
         }
 
         Ok(msg)
-    }
-
-    fn new() -> MTMessage {
-        MTMessage {
-            elements: Vec::new(),
-        }
     }
 
     pub fn builder() -> MTMessageBuilder {
