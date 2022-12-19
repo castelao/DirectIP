@@ -28,9 +28,9 @@ mod payload;
 
 use std::io::Read;
 
-use byteorder::{BigEndian, ReadBytesExt};
+use byteorder::{BigEndian, ReadBytesExt, WriteBytesExt};
 
-use crate::error::Error;
+use crate::error::{Error, Result};
 use crate::InformationElement;
 use header::Header;
 use payload::Payload;
@@ -66,9 +66,8 @@ impl InformationElement for InformationElementType {
 }
 
 impl InformationElementType {
-    #[allow(dead_code)]
     /// Parse a InformationElementType from a Read trait
-    pub(super) fn from_reader<R: std::io::Read>(mut rdr: R) -> Result<Self, Error> {
+    pub(super) fn from_reader<R: std::io::Read>(mut rdr: R) -> Result<Self> {
         let iei = rdr.read_u8()?;
         let buffer = [iei; 1];
         let buffer = buffer.chain(rdr);
@@ -149,7 +148,7 @@ impl MOMessage {
         buffer
     }
     /// Parse bytes from a buffer to compose an MTMessage
-    pub fn from_reader<R: std::io::Read>(mut rdr: R) -> Result<Self, Error> {
+    pub fn from_reader<R: std::io::Read>(mut rdr: R) -> Result<Self> {
         // Protocol version
         let version = rdr.read_u8()?;
         // Expects version 1
