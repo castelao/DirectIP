@@ -118,6 +118,27 @@ impl MOMessage {
         3 + self.elements.iter().map(|e| e.total_size()).sum::<usize>()
     }
 
+    // Write the full message
+    fn write<W: std::io::Write>(&self, wtr: &mut W) -> Result<usize> {
+        // Protocol version
+        wtr.write_u8(1)?;
+        // Message total length
+        wtr.write_u16::<BigEndian>(self.len())?;
+        // Iterate on all Information Elements
+        let mut n = 3;
+        for e in &self.elements {
+            n += e.write(wtr)?;
+        }
+        Ok(n)
+    }
+
+    /// Export MT-Message into a vector of u8
+    pub fn to_vec(&self) -> Vec<u8> {
+        let mut buffer: Vec<u8> = Vec::new();
+        self.write(&mut buffer)
+            .expect("Failed to write Information Element to a vec.");
+        buffer
+    }
     /// Parse bytes from a buffer to compose an MTMessage
     pub fn from_reader<R: std::io::Read>(mut rdr: R) -> Result<Self, Error> {
         // Protocol version
