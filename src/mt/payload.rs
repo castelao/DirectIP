@@ -18,7 +18,7 @@ const MAX_PAYLOAD_LEN: usize = 1890;
 )]
 /// Mobile Terminated Payload
 ///
-/// Note that length is a 2-bytes and valid range is 1-1890
+/// Although length is a 2-bytes, valid range is 1-1890
 pub(super) struct Payload {
     #[builder(setter(into))]
     payload: Vec<u8>,
