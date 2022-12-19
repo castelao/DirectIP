@@ -88,6 +88,18 @@ impl InformationElementType {
     }
 }
 
+impl From<Header> for InformationElementType {
+    fn from(header: Header) -> Self {
+        InformationElementType::H(header)
+    }
+}
+
+impl From<Payload> for InformationElementType {
+    fn from(payload: Payload) -> Self {
+        InformationElementType::P(payload)
+    }
+}
+
 #[derive(Debug)]
 pub struct MOMessage {
     elements: Vec<InformationElementType>,
