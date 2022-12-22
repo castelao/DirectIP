@@ -7,7 +7,7 @@ pub mod mt;
 
 use std::io::BufReader;
 
-use crate::error::Error;
+use crate::error::{Error, Result};
 
 trait InformationElement {
     fn identifier(&self) -> u8;
@@ -20,7 +20,7 @@ trait InformationElement {
         3 + usize::from(self.len())
     }
 
-    fn write<W: std::io::Write>(&self, wtr: &mut W) -> Result<usize, Error>;
+    fn write<W: std::io::Write>(&self, wtr: &mut W) -> Result<usize>;
 
     /// Export Information Element to a vec
     fn to_vec(&self) -> Vec<u8> {

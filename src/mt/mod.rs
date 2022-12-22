@@ -29,7 +29,7 @@ use std::io::Read;
 
 use byteorder::{BigEndian, ReadBytesExt, WriteBytesExt};
 
-use crate::error::Error;
+use crate::error::{Error, Result};
 use crate::InformationElement;
 use confirmation::Confirmation;
 use header::{Header, HeaderBuilder};
@@ -59,7 +59,7 @@ impl InformationElement for InformationElementType {
         }
     }
 
-    fn write<W: std::io::Write>(&self, wtr: &mut W) -> Result<usize, Error> {
+    fn write<W: std::io::Write>(&self, wtr: &mut W) -> Result<usize> {
         match self {
             InformationElementType::H(element) => element.write(wtr),
             InformationElementType::P(element) => element.write(wtr),
@@ -70,7 +70,7 @@ impl InformationElement for InformationElementType {
 
 impl InformationElementType {
     /// Parse a InformationElementType from a Read trait
-    pub(super) fn from_reader<R: std::io::Read>(mut rdr: R) -> Result<Self, Error> {
+    pub(super) fn from_reader<R: std::io::Read>(mut rdr: R) -> Result<Self> {
         let iei = rdr.read_u8()?;
         let buffer = [iei; 1];
         let buffer = buffer.chain(rdr);
@@ -179,7 +179,7 @@ impl MTMessage {
     }
 
     // Write the full message
-    fn write<W: std::io::Write>(&self, wtr: &mut W) -> Result<usize, Error> {
+    fn write<W: std::io::Write>(&self, wtr: &mut W) -> Result<usize> {
         // Protocol version
         wtr.write_u8(1)?;
         // Message total length
@@ -201,7 +201,7 @@ impl MTMessage {
     }
 
     /// Parse bytes from a buffer to compose an MTMessage
-    pub fn from_reader<R: std::io::Read>(mut rdr: R) -> Result<Self, Error> {
+    pub fn from_reader<R: std::io::Read>(mut rdr: R) -> Result<Self> {
         // Protocol version
         let version = rdr.read_u8()?;
         // Expects version 1
