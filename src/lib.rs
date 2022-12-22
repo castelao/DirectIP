@@ -5,7 +5,7 @@ mod error;
 pub mod mo;
 pub mod mt;
 
-use std::io::BufReader;
+use std::io::{Seek, SeekFrom};
 
 use crate::error::{Error, Result};
 
@@ -45,11 +45,15 @@ impl Message {
         }
     }
 
-    pub fn from_reader<R: std::io::Read>(rdr: R) -> Result<Self, Error> {
-        // Do the math for actual maximum possible size
-        // Using BufReader so we can rewind if failed to read the first type
-        let buffer = BufReader::with_capacity(3000, rdr);
-        let msg = mt::MTMessage::from_reader(buffer)?;
-        Ok(Message::MT(msg))
+    pub fn from_reader<R: std::io::Read + Seek>(mut rdr: R) -> Result<Self> {
+        match mt::MTMessage::from_reader(&mut rdr) {
+            Ok(msg) => Ok(Message::MT(msg)),
+            Err(Error::WrongIEType(_, _, _)) => {
+                rdr.seek(SeekFrom::Start(0))?;
+                let msg = mo::MOMessage::from_reader(rdr)?;
+                Ok(Message::MO(msg))
+            }
+            Err(e) => Err(e),
+        }
     }
 }
