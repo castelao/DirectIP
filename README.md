@@ -18,7 +18,7 @@ the core support for applications such as the one listed below.
 
 ## Minimum supported Rust version
 
-Currently the minimum supported Rust version is 1.64.0
+Currently the minimum supported Rust version is 1.60.0
 
 ## License
 
