@@ -10,6 +10,7 @@ use crate::InformationElement;
 
 /// Maximum accepted payload length defined by the Direct-IP protocol
 const MAX_PAYLOAD_LEN: usize = 1960;
+// Some modem models can have a smaller limit.
 
 #[derive(Builder, Debug)]
 #[builder(
