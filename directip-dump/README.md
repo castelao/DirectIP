@@ -1,10 +1,10 @@
-# Iridium's SBD Direct-IP dump
+# Iridium's SBD Direct-IP Dump
 
-Iridium's Direct-IP protocol of Short Burst Data communication system.
+Iridium's Direct-IP protocol of Short Burst Data (SBD) communication system.
 
-This crate is focused on parsing Direct-IP messages to extract information
-from such binary message. It could be used, for instance, to identify if a
-message is an MT type, show the IMEI, or dump the payload.
+This crate is focused on parsing and extracting information from Direct-IP
+(binary) messages. It could be used, for instance, to identify if a message is
+an MT type, expose the IMEI, or show the payload.
 
 ## Install
 
