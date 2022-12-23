@@ -17,7 +17,7 @@ use crate::InformationElement;
 /// Status:
 /// * 0: Success
 ///
-enum SessionStatus {
+pub(crate) enum SessionStatus {
     Success,
     MTTooLarge,
     BadLocation,
@@ -48,7 +48,6 @@ impl SessionStatus {
         }
     }
 
-    #[allow(dead_code)]
     /// Parse a DispositionFlags from a Read trait
     fn from_reader<R: std::io::Read>(mut rdr: R) -> Result<Self, Error> {
         let status = rdr.read_u8()?;
@@ -189,7 +188,7 @@ mod test_session_status {
 /// * MOMSN
 /// * MTMSN
 /// * Time of Session
-struct Header {
+pub(crate) struct Header {
     cdr_uid: u32,
     imei: [u8; 15],
     session_status: SessionStatus,
@@ -199,9 +198,8 @@ struct Header {
 }
 
 impl Header {
-    #[allow(dead_code)]
     // Import a Header from a Read trait
-    fn from_reader<R: std::io::Read>(mut rdr: R) -> Result<Header, Error> {
+    pub(super) fn from_reader<R: std::io::Read>(mut rdr: R) -> Result<Header, Error> {
         let iei = rdr.read_u8()?;
         assert_eq!(iei, 0x01);
         let len = rdr.read_u16::<BigEndian>()?;
@@ -249,10 +247,10 @@ impl InformationElement for Header {
 
     // Header length field
     //
-    // This is a fixed value for the Header, but used to keep consistency with the
-    // other IEI.
+    // This is a fixed value for the Header, but used to keep consistency with
+    // the other IEI.
     fn len(&self) -> u16 {
-        21
+        28
     }
 
     /// Export a Header using a Write trait
@@ -289,10 +287,7 @@ mod test_mt_header {
             mtmsn: 111,
             time_of_session: "2000-03-14T12:12:12Z".parse::<DateTime<Utc>>().unwrap(),
         };
-        let mut msg = vec![];
-        let n = header.write(&mut msg);
-        // Total size is always 28
-        assert_eq!(n.unwrap(), 28);
+        let msg = header.to_vec();
         assert_eq!(
             msg,
             [

@@ -29,13 +29,12 @@ use std::io::Read;
 
 use byteorder::{BigEndian, ReadBytesExt, WriteBytesExt};
 
-use crate::error::Error;
+use crate::error::{Error, Result};
 use crate::InformationElement;
 use confirmation::Confirmation;
 use header::{Header, HeaderBuilder};
 use payload::{Payload, PayloadBuilder};
 
-#[allow(dead_code)]
 #[derive(Debug)]
 enum InformationElementType {
     H(Header),
@@ -60,7 +59,7 @@ impl InformationElement for InformationElementType {
         }
     }
 
-    fn write<W: std::io::Write>(&self, wtr: &mut W) -> Result<usize, Error> {
+    fn write<W: std::io::Write>(&self, wtr: &mut W) -> Result<usize> {
         match self {
             InformationElementType::H(element) => element.write(wtr),
             InformationElementType::P(element) => element.write(wtr),
@@ -70,9 +69,8 @@ impl InformationElement for InformationElementType {
 }
 
 impl InformationElementType {
-    #[allow(dead_code)]
     /// Parse a InformationElementType from a Read trait
-    pub(super) fn from_reader<R: std::io::Read>(mut rdr: R) -> Result<Self, Error> {
+    pub(super) fn from_reader<R: std::io::Read>(mut rdr: R) -> Result<Self> {
         let iei = rdr.read_u8()?;
         let buffer = [iei; 1];
         let buffer = buffer.chain(rdr);
@@ -160,9 +158,20 @@ pub struct MTMessage {
 // Let's allow dead while still WIP
 #[allow(dead_code)]
 impl MTMessage {
-    // Length of the full message
+    fn new() -> MTMessage {
+        MTMessage {
+            elements: Vec::new(),
+        }
+    }
+
+    /// Overall Message Length
     fn len(&self) -> u16 {
-        self.elements.iter().map(|e| e.len()).sum()
+        self.elements
+            .iter()
+            .map(|e| e.total_size())
+            .sum::<usize>()
+            .try_into()
+            .unwrap()
     }
 
     fn total_size(&self) -> usize {
@@ -170,7 +179,7 @@ impl MTMessage {
     }
 
     // Write the full message
-    fn write<W: std::io::Write>(&self, wtr: &mut W) -> Result<usize, Error> {
+    fn write<W: std::io::Write>(&self, wtr: &mut W) -> Result<usize> {
         // Protocol version
         wtr.write_u8(1)?;
         // Message total length
@@ -192,7 +201,7 @@ impl MTMessage {
     }
 
     /// Parse bytes from a buffer to compose an MTMessage
-    pub fn from_reader<R: std::io::Read>(mut rdr: R) -> Result<Self, Error> {
+    pub fn from_reader<R: std::io::Read>(mut rdr: R) -> Result<Self> {
         // Protocol version
         let version = rdr.read_u8()?;
         // Expects version 1
@@ -211,12 +220,6 @@ impl MTMessage {
         Ok(msg)
     }
 
-    fn new() -> MTMessage {
-        MTMessage {
-            elements: Vec::new(),
-        }
-    }
-
     pub fn builder() -> MTMessageBuilder {
         MTMessageBuilder::default()
     }
@@ -228,20 +231,6 @@ impl MTMessage {
     fn push(&mut self, element: InformationElementType) {
         self.elements.push(element);
     }
-
-    /*
-    fn from_reader<R: std::io::Read>(mut rdr: R) -> Result<Self, Error> {
-        let version = rdr.read_u8()?;
-        assert_eq!(version, 1);
-        let len = rdr.read_u16::<BigEndian>()?;
-        let mut msg = Self::new();
-        while Some(element) = InformationElementType::from_reader(rdr).unwrap() {
-            msg.push(element);
-        }
-
-        Ok(msg)
-    }
-    */
 
     fn confirmation(&self) -> Option<&Confirmation> {
         self.elements

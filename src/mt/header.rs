@@ -39,7 +39,6 @@ pub struct DispositionFlags {
 }
 
 impl DispositionFlags {
-    #[allow(dead_code)]
     /// Decode a u16 into a DispositionFlags
     ///
     /// Each flag is encoded by a bit in a specific position, which is on
@@ -74,7 +73,6 @@ impl DispositionFlags {
         }
     }
 
-    #[allow(dead_code)]
     /// Parse a DispositionFlags from a Read trait
     fn from_reader<R: std::io::Read>(mut rdr: R) -> Result<Self, Error> {
         let code = rdr.read_u16::<BigEndian>()?;
@@ -291,7 +289,6 @@ pub(crate) struct Header {
 }
 
 impl Header {
-    #[allow(dead_code)]
     // Import a Header from a Read trait
     pub(super) fn from_reader<R: std::io::Read>(mut rdr: R) -> Result<Header, Error> {
         let iei = rdr.read_u8()?;
@@ -345,8 +342,8 @@ impl InformationElement for Header {
 
     // Header length field
     //
-    // This is a fixed value for the Header, but used to keep consistency with the
-    // other IEI.
+    // This is a fixed value for the Header, but used to keep consistency with
+    // the other IEI.
     fn len(&self) -> u16 {
         21
     }
@@ -417,7 +414,7 @@ mod test_mt_header {
     }
 
     #[test]
-    fn roundtrip_write_n_read() {
+    fn roundtrip_to_vec_n_read() {
         let header = Header {
             client_msg_id: 9999,
             imei: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14],
