@@ -191,6 +191,10 @@ impl Confirmation {
         &self.message_status
     }
 
+    pub(crate) fn imei(&self) -> [u8; 15] {
+        self.imei
+    }
+
     #[allow(dead_code)]
     pub(crate) fn builder() -> ConfirmationBuilder {
         ConfirmationBuilder::default()
