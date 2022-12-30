@@ -5,11 +5,21 @@ use directip::mt::MTMessage;
 
 #[derive(Parser)]
 struct Cli {
+    #[arg(long)]
+    direction: bool,
+
+    #[arg(long)]
+    imei: bool,
+
     path: PathBuf,
 }
 
 fn main() {
-    let Cli { path } = Cli::parse();
+    let Cli {
+        path,
+        direction,
+        imei,
+    } = Cli::parse();
 
     let rdr = std::fs::File::open(path).expect("Error opening file");
 
@@ -22,6 +32,11 @@ fn main() {
     };
     */
 
-    dbg!(msg.message_type());
-    dbg!(msg);
+    if imei {
+        dbg!(msg.imei());
+    } else if direction {
+        dbg!(msg.message_type());
+    } else {
+        dbg!(msg);
+    }
 }
