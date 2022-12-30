@@ -56,4 +56,11 @@ impl Message {
             Err(e) => Err(e),
         }
     }
+
+    pub fn imei(&self) -> Option<[u8; 15]> {
+        match &self {
+            Message::MO(m) => m.imei(),
+            Message::MT(m) => m.imei(),
+        }
+    }
 }
