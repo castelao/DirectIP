@@ -315,8 +315,7 @@ impl Header {
     }
 
     /// imei field
-    #[allow(dead_code)]
-    fn imei(self) -> [u8; 15] {
+    pub(crate) fn imei(&self) -> [u8; 15] {
         self.imei
     }
 
