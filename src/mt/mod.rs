@@ -248,6 +248,27 @@ impl MTMessage {
     pub fn confirmation_message(&self) -> Option<String> {
         self.confirmation().map(|v| v.message_status().to_string())
     }
+
+    fn header(&self) -> Option<&Header> {
+        self.elements
+            .iter()
+            .find(|elem| matches!(elem, InformationElementType::H(_)))
+            .map(|e| {
+                if let InformationElementType::H(h) = e {
+                    h
+                } else {
+                    unreachable!()
+                }
+            })
+    }
+
+    pub fn imei(&self) -> Option<[u8; 15]> {
+        self.elements.iter().find_map(|elem| match elem {
+            InformationElementType::H(h) => Some(h.imei()),
+            InformationElementType::C(c) => Some(c.imei()),
+            _ => None,
+        })
+    }
 }
 
 #[cfg(test)]
