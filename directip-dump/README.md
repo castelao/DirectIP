@@ -51,6 +51,11 @@ Compile it by running: `cargo build --release -p directip-dump`
 
 ## Options and customization
 
+- direction: Identify if message is of type mobile terminated (MT) or mobile
+             originated (MO).
+
+- imei: Extract the IMEI from the given message.
+
 ## Examples
 
 ## Minimum supported Rust version
