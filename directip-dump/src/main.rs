@@ -1,7 +1,7 @@
 use camino::Utf8PathBuf as PathBuf;
 use clap::Parser;
 
-use directip::mt::MTMessage;
+use directip::Message;
 
 #[derive(Parser)]
 struct Cli {
@@ -23,7 +23,7 @@ fn main() {
 
     let rdr = std::fs::File::open(path).expect("Error opening file");
 
-    let msg = directip::Message::from_reader(rdr).unwrap();
+    let msg = Message::from_reader(rdr).unwrap();
 
     /*
     let msg = match MTMessage::from_reader(rdr) {
