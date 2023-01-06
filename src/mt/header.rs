@@ -10,6 +10,7 @@ use derive_builder::Builder;
 use crate::error::Error;
 use crate::InformationElement;
 
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 #[derive(Builder, Clone, Debug, PartialEq, Eq)]
 /// Disposition Flags
 ///
@@ -262,6 +263,28 @@ mod test_disposition_flags {
     }
 }
 
+#[cfg(all(test, feature = "serde"))]
+mod test_disposition_flags_serde {
+    use super::{DispositionFlags, InformationElement};
+
+    #[test]
+    fn disposition_flags_serde_roundtrip() {
+        let disposition_flags = DispositionFlags {
+            flush_queue: true,
+            send_ring_alert: true,
+            update_location: true,
+            high_priority: true,
+            assign_mtmsn: true,
+        };
+        let json = serde_json::to_string(&disposition_flags).unwrap();
+
+        let roundtrip: DispositionFlags = serde_json::from_str(&json).unwrap();
+
+        assert_eq!(disposition_flags, roundtrip);
+    }
+}
+
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 #[derive(Builder, Debug, PartialEq)]
 #[builder(pattern = "owned", build_fn(error = "crate::error::Error"))]
 /// Mobile Terminated Header
@@ -429,6 +452,32 @@ mod test_mt_header {
             header,
             Header::from_reader(header.to_vec().as_slice()).unwrap()
         );
+    }
+}
+
+#[cfg(all(test, feature = "serde"))]
+mod test_mt_header_serde {
+    use super::{DispositionFlags, Header, InformationElement};
+
+    #[test]
+    fn header_serde_roundtrip() {
+        let header = Header {
+            client_msg_id: 9999,
+            imei: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14],
+            disposition_flags: DispositionFlags {
+                flush_queue: true,
+                send_ring_alert: true,
+                update_location: true,
+                high_priority: true,
+                assign_mtmsn: true,
+            },
+        };
+        let json = serde_json::to_string(&header).unwrap();
+        assert_eq!(json, "");
+
+        let roundtrip: Header = serde_json::from_str(&json).unwrap();
+
+        assert_eq!(header, roundtrip);
     }
 }
 
