@@ -265,7 +265,7 @@ mod test_disposition_flags {
 
 #[cfg(all(test, feature = "serde"))]
 mod test_disposition_flags_serde {
-    use super::{DispositionFlags, InformationElement};
+    use super::DispositionFlags;
 
     #[test]
     fn disposition_flags_serde_roundtrip() {
@@ -457,7 +457,7 @@ mod test_mt_header {
 
 #[cfg(all(test, feature = "serde"))]
 mod test_mt_header_serde {
-    use super::{DispositionFlags, Header, InformationElement};
+    use super::{DispositionFlags, Header};
 
     #[test]
     fn header_serde_roundtrip() {
