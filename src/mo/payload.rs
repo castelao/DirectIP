@@ -109,8 +109,8 @@ mod test_mt_payload {
         for i in 0..252 {
             msg[2] = i;
             let payload = Payload::from_reader(&msg[..]).unwrap();
-            assert!(payload.len() == i.into());
-            assert!(payload.to_vec().len() - 3 == i.into());
+            assert!(payload.len() == i as u16);
+            assert!(payload.to_vec().len() - 3 == i as usize);
         }
     }
 }
