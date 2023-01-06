@@ -20,6 +20,10 @@ chrono = "0.4.23"
 log = "0.4"
 thiserror = "1.0"
 derive_builder = "0.11.2"
+serde = { version = "1.0.147", optional = true, default-features = false, features=["serde_derive"]}
 
 [lib]
 name = "directip"
+
+[dev-dependencies]
+serde_json = "1.0.91"
