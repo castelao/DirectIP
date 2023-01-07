@@ -24,6 +24,7 @@
 //! MO Payload                      12  "Hello World!"
 
 mod header;
+mod location;
 mod payload;
 
 use std::io::Read;
