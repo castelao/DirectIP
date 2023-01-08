@@ -25,13 +25,6 @@ fn main() {
 
     let msg = Message::from_reader(rdr).unwrap();
 
-    /*
-    let msg = match MTMessage::from_reader(rdr) {
-        Ok(v) => v,
-        Err(_) => todo!("try MOMessage"),
-    };
-    */
-
     if imei {
         let output: String = msg
             .imei()
