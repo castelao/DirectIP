@@ -4,6 +4,7 @@ use clap::Parser;
 use directip::Message;
 
 #[derive(Parser)]
+#[command(author, version, about, long_about = None)]
 struct Cli {
     #[arg(long)]
     direction: bool,
