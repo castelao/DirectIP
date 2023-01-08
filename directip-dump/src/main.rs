@@ -35,7 +35,7 @@ fn main() {
     if imei {
         dbg!(msg.imei());
     } else if direction {
-        dbg!(msg.message_type());
+        println!("{}", msg.message_type());
     } else {
         dbg!(msg);
     }
