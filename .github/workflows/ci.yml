@@ -58,7 +58,7 @@ jobs:
         uses: actions-rs/cargo@v1
         with:
           command: test
-          args: --no-fail-fast
+          args: --workspace --no-fail-fast
 
   cross_testing:
     runs-on: ubuntu-latest

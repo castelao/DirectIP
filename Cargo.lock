@@ -348,7 +348,7 @@ checksum = "6184e33543162437515c2e2b48714794e37845ec9851711914eec9d308f6ebe8"
 
 [[package]]
 name = "directip"
-version = "0.2.3"
+version = "0.2.4"
 dependencies = [
  "byteorder",
  "chrono",
@@ -372,7 +372,7 @@ dependencies = [
 
 [[package]]
 name = "directip-dump"
-version = "0.0.2"
+version = "0.0.3"
 dependencies = [
  "anyhow",
  "camino",

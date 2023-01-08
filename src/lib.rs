@@ -38,6 +38,7 @@ pub enum Message {
 }
 
 impl Message {
+    /// Identify the type of a Message between MO or MT
     pub fn message_type(&self) -> String {
         match &self {
             Message::MO(_) => "MO".to_string(),
@@ -45,6 +46,7 @@ impl Message {
         }
     }
 
+    /// Parse a Message from a reader
     pub fn from_reader<R: std::io::Read + Seek>(mut rdr: R) -> Result<Self> {
         match mt::MTMessage::from_reader(&mut rdr) {
             Ok(msg) => Ok(Message::MT(msg)),
@@ -54,6 +56,14 @@ impl Message {
                 Ok(Message::MO(msg))
             }
             Err(e) => Err(e),
+        }
+    }
+
+    /// Extract the IMEI from a Message
+    pub fn imei(&self) -> Option<[u8; 15]> {
+        match &self {
+            Message::MO(m) => m.imei(),
+            Message::MT(m) => m.imei(),
         }
     }
 }

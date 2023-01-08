@@ -169,4 +169,21 @@ impl MOMessage {
     fn push(&mut self, element: InformationElementType) {
         self.elements.push(element);
     }
+
+    fn header(&self) -> Option<&Header> {
+        self.elements
+            .iter()
+            .find(|elem| matches!(elem, InformationElementType::H(_)))
+            .map(|e| {
+                if let InformationElementType::H(h) = e {
+                    h
+                } else {
+                    unreachable!()
+                }
+            })
+    }
+
+    pub fn imei(&self) -> Option<[u8; 15]> {
+        self.header().map(|h| h.imei())
+    }
 }
