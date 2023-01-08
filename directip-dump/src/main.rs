@@ -33,7 +33,14 @@ fn main() {
     */
 
     if imei {
-        dbg!(msg.imei());
+        let output: String = msg
+            .imei()
+            .unwrap()
+            .iter()
+            .map(|x| format!("{:02x}", x))
+            .collect::<Vec<_>>()
+            .join(":");
+        println!("{}", output);
     } else if direction {
         println!("{}", msg.message_type());
     } else {
