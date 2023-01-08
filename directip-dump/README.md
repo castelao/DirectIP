@@ -58,6 +58,10 @@ Compile it by running: `cargo build --release -p directip-dump`
 
 ## Examples
 
+```shell,no_run
+directip-dump --direction my_file.isbd
+```
+
 ## Minimum supported Rust version
 
 Currently the minimum supported Rust version is 1.60.0
