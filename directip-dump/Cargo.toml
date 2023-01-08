@@ -13,7 +13,7 @@ repository = "https://github.com/castelao/DirectIP"
 [dependencies]
 anyhow = "1.0.62"
 camino = "1.1.1"
-clap = { version = "4", features=["cargo", "derive"] }
+clap = { version = "4.0", features=["cargo", "derive"] }
 directip = { version = "0.2.3", path = "../" }
 log = "0.4"
 
