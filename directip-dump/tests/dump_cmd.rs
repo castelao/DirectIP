@@ -12,7 +12,7 @@ fn direction_mt() {
 
     let assert = cmd
         .arg("--direction")
-        .arg("tests/data/sample_mt.isbd")
+        .arg("tests/data/mt_confirmation.isbd")
         .assert();
     assert.success().stdout("MT\n");
 }
