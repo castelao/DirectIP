@@ -4,6 +4,7 @@ use derive_builder::Builder;
 use crate::error::{Error, Result};
 use crate::InformationElement;
 
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub enum MessageStatus {
     // Successful, order of message in the MT message queue starting on 0
@@ -119,6 +120,26 @@ impl std::fmt::Display for MessageStatus {
                 write!(f, "Failed transmission, certificate was rejected")
             }
         }
+    }
+}
+
+#[cfg(all(test, feature = "serde"))]
+mod test_mt_message_status_serde {
+    use super::MessageStatus;
+
+    #[test]
+    fn message_status_serde_roundtrip() {
+        let msg = MessageStatus::SuccessfulQueueOrder(8);
+        let json = serde_json::to_string(&msg).unwrap();
+
+        //TODO: if we want to return a numerical value instead of a map or string
+        //assert_eq!(json, "8");
+        //TODO: loop over -12..50 and check with decode()
+
+        let roundtrip: MessageStatus = serde_json::from_str(&json).unwrap();
+
+        assert_eq!(msg, roundtrip);
+        assert!(matches!(msg, MessageStatus::SuccessfulQueueOrder(8)));
     }
 }
 
