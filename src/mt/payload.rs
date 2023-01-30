@@ -22,6 +22,7 @@ const MAX_PAYLOAD_LEN: usize = 1890;
 /// Although length is a 2-bytes, valid range is 1-1890
 pub(super) struct Payload {
     #[builder(setter(into))]
+    #[cfg_attr(feature = "serde", serde(with = "serde_bytes"))]
     payload: Vec<u8>,
 }
 
