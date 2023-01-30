@@ -7,6 +7,7 @@ description = "Iridium SBD Direct-IP communication protocol"
 documentation = "https://docs.rs/directip"
 license = "MIT OR Apache-2.0"
 repository = "https://github.com/castelao/DirectIP"
+rust-version = "1.60.0"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
