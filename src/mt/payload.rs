@@ -11,7 +11,8 @@ use crate::InformationElement;
 /// Maximum accepted payload length defined by the Direct-IP protocol
 const MAX_PAYLOAD_LEN: usize = 1890;
 
-#[derive(Builder, Debug)]
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
+#[derive(Builder, Debug, PartialEq)]
 #[builder(
     pattern = "owned",
     build_fn(error = "crate::error::Error", validate = "Self::validate")
@@ -21,6 +22,7 @@ const MAX_PAYLOAD_LEN: usize = 1890;
 /// Although length is a 2-bytes, valid range is 1-1890
 pub(super) struct Payload {
     #[builder(setter(into))]
+    #[cfg_attr(feature = "serde", serde(with = "serde_bytes"))]
     payload: Vec<u8>,
 }
 
@@ -108,8 +110,8 @@ mod test_mt_payload {
         for i in 0..252 {
             msg[2] = i;
             let payload = Payload::from_reader(&msg[..]).unwrap();
-            assert!(payload.len() == i.into());
-            assert!(payload.to_vec().len() - 3 == i.into());
+            assert!(payload.len() == i as u16);
+            assert!(payload.to_vec().len() - 3 == i as usize);
         }
     }
 }
@@ -119,6 +121,24 @@ impl std::fmt::Display for Payload {
         write!(f, "Payload Element")?;
         write!(f, "  len {}", self.len())?;
         write!(f, "  {:02X?}", self.payload)
+    }
+}
+
+#[cfg(all(test, feature = "serde"))]
+mod test_payload_serde {
+    use super::Payload;
+
+    #[test]
+    fn roundtrip() {
+        let mut payload = vec![0u8; 10];
+        payload[0] = 0x42;
+        let payload = Payload { payload };
+        let json = serde_json::to_string(&payload).unwrap();
+
+        let roundtrip: Payload = serde_json::from_str(&json).unwrap();
+
+        assert_eq!(payload, roundtrip);
+        assert_eq!(roundtrip.payload[0], 0x42);
     }
 }
 

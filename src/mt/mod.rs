@@ -35,7 +35,8 @@ use confirmation::Confirmation;
 use header::{Header, HeaderBuilder};
 use payload::{Payload, PayloadBuilder};
 
-#[derive(Debug)]
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
+#[derive(Debug, PartialEq)]
 enum InformationElementType {
     H(Header),
     P(Payload),
@@ -106,6 +107,58 @@ mod test_mt_information_element {
         ]
         .as_slice();
         let _ie = InformationElementType::from_reader(msg).unwrap();
+    }
+}
+
+#[cfg(all(test, feature = "serde"))]
+mod test_mt_information_element_serde {
+    use super::{
+        confirmation::MessageStatus, Confirmation, Header, InformationElementType, Payload,
+    };
+
+    #[test]
+    fn confirmation_roundtrip() {
+        let c = Confirmation::builder()
+            .client_msg_id(9999)
+            .imei([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 1, 2, 3, 4])
+            .id_reference(0)
+            .message_status(MessageStatus::SuccessfulQueueOrder(7))
+            .build()
+            .unwrap();
+        let ie: InformationElementType = c.into();
+        let json = serde_json::to_string(&ie).unwrap();
+
+        let roundtrip: InformationElementType = serde_json::from_str(&json).unwrap();
+
+        assert_eq!(ie, roundtrip);
+    }
+
+    #[test]
+    fn payload_roundtrip() {
+        let mut payload = vec![0u8; 10];
+        payload[0] = 0x42;
+        let p = Payload::builder().payload(payload).build().unwrap();
+        let ie: InformationElementType = p.into();
+        let json = serde_json::to_string(&ie).unwrap();
+
+        let roundtrip: InformationElementType = serde_json::from_str(&json).unwrap();
+
+        assert_eq!(ie, roundtrip);
+    }
+
+    #[test]
+    fn header_roundtrip() {
+        let header = Header::builder()
+            .client_msg_id(9999)
+            .imei([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 1, 2, 3, 4])
+            .build()
+            .unwrap();
+        let ie: InformationElementType = header.into();
+        let json = serde_json::to_string(&ie).unwrap();
+
+        let roundtrip: InformationElementType = serde_json::from_str(&json).unwrap();
+
+        assert_eq!(ie, roundtrip);
     }
 }
 

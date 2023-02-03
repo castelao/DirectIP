@@ -4,6 +4,7 @@ use derive_builder::Builder;
 use crate::error::{Error, Result};
 use crate::InformationElement;
 
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub enum MessageStatus {
     // Successful, order of message in the MT message queue starting on 0
@@ -122,6 +123,27 @@ impl std::fmt::Display for MessageStatus {
     }
 }
 
+#[cfg(all(test, feature = "serde"))]
+mod test_message_status_serde {
+    use super::MessageStatus;
+
+    #[test]
+    fn roundtrip() {
+        let msg = MessageStatus::SuccessfulQueueOrder(8);
+        let json = serde_json::to_string(&msg).unwrap();
+
+        //TODO: if we want to return a numerical value instead of a map or string
+        //assert_eq!(json, "8");
+        //TODO: loop over -12..50 and check with decode()
+
+        let roundtrip: MessageStatus = serde_json::from_str(&json).unwrap();
+
+        assert_eq!(msg, roundtrip);
+        assert!(matches!(msg, MessageStatus::SuccessfulQueueOrder(8)));
+    }
+}
+
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 #[derive(Builder, Debug, PartialEq, Eq)]
 #[builder(pattern = "owned", build_fn(error = "crate::error::Error"))]
 pub struct Confirmation {
@@ -224,6 +246,27 @@ mod test_mt_confirmation {
                 0x07, 0x08, 0x09, 0x0a, 0x0b, 0x0c, 0x0d, 0x0e, 0xff, 0xff, 0xff, 0xff, 0xff, 0xf5
             ]
         );
+    }
+}
+
+#[cfg(all(test, feature = "serde"))]
+mod test_confirmation_serde {
+    use super::{Confirmation, MessageStatus};
+
+    #[test]
+    fn roundtrip() {
+        let confirmation = Confirmation {
+            client_msg_id: 9999,
+            imei: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14],
+            id_reference: 4294967295,
+            message_status: MessageStatus::SuccessfulQueueOrder(42),
+        };
+
+        let json = serde_json::to_string(&confirmation).unwrap();
+
+        let roundtrip: Confirmation = serde_json::from_str(&json).unwrap();
+
+        assert_eq!(confirmation, roundtrip);
     }
 }
 

@@ -7,6 +7,7 @@ description = "Iridium SBD Direct-IP communication protocol"
 documentation = "https://docs.rs/directip"
 license = "MIT OR Apache-2.0"
 repository = "https://github.com/castelao/DirectIP"
+rust-version = "1.60.0"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
@@ -14,12 +15,20 @@ repository = "https://github.com/castelao/DirectIP"
 members = ["directip-client", "directip-dump"]
 default-members = [".", "directip-client"]
 
+[features]
+serde = ["dep:serde", "dep:serde_bytes"]
+
 [dependencies]
 byteorder = "1"
 chrono = "0.4.23"
 log = "0.4"
 thiserror = "1.0"
 derive_builder = "0.11.2"
+serde = { version = "1.0.147", optional = true, default-features = false, features=["serde_derive"]}
+serde_bytes = { version = "0.11.8", optional = true }
 
 [lib]
 name = "directip"
+
+[dev-dependencies]
+serde_json = "1.0.91"
