@@ -12,7 +12,8 @@ use crate::InformationElement;
 const MAX_PAYLOAD_LEN: usize = 1960;
 // Some modem models can have a smaller limit.
 
-#[derive(Builder, Debug)]
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
+#[derive(Builder, Debug, PartialEq)]
 #[builder(
     pattern = "owned",
     build_fn(error = "crate::error::Error", validate = "Self::validate")
@@ -22,6 +23,7 @@ const MAX_PAYLOAD_LEN: usize = 1960;
 /// Although length is a 2-bytes, the valid range is 1-1960.
 pub(super) struct Payload {
     #[builder(setter(into))]
+    #[cfg_attr(feature = "serde", serde(with = "serde_bytes"))]
     payload: Vec<u8>,
 }
 
@@ -120,6 +122,24 @@ impl std::fmt::Display for Payload {
         write!(f, "Payload Element")?;
         write!(f, "  len {}", self.len())?;
         write!(f, "  {:02X?}", self.payload)
+    }
+}
+
+#[cfg(all(test, feature = "serde"))]
+mod test_payload_serde {
+    use super::Payload;
+
+    #[test]
+    fn roundtrip() {
+        let mut payload = vec![0u8; 10];
+        payload[0] = 0x42;
+        let payload = Payload { payload };
+        let json = serde_json::to_string(&payload).unwrap();
+
+        let roundtrip: Payload = serde_json::from_str(&json).unwrap();
+
+        assert_eq!(payload, roundtrip);
+        assert_eq!(roundtrip.payload[0], 0x42);
     }
 }
 
