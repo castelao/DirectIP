@@ -124,11 +124,11 @@ impl std::fmt::Display for MessageStatus {
 }
 
 #[cfg(all(test, feature = "serde"))]
-mod test_mt_message_status_serde {
+mod test_message_status_serde {
     use super::MessageStatus;
 
     #[test]
-    fn message_status_serde_roundtrip() {
+    fn roundtrip() {
         let msg = MessageStatus::SuccessfulQueueOrder(8);
         let json = serde_json::to_string(&msg).unwrap();
 
@@ -254,7 +254,7 @@ mod test_confirmation_serde {
     use super::{Confirmation, MessageStatus};
 
     #[test]
-    fn confirmation_serde_roundtrip() {
+    fn roundtrip() {
         let confirmation = Confirmation {
             client_msg_id: 9999,
             imei: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14],

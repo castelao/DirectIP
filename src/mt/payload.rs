@@ -125,11 +125,11 @@ impl std::fmt::Display for Payload {
 }
 
 #[cfg(all(test, feature = "serde"))]
-mod test_mt_payload_serde {
+mod test_payload_serde {
     use super::Payload;
 
     #[test]
-    fn payload_serde_roundtrip() {
+    fn roundtrip() {
         let mut payload = vec![0u8; 10];
         payload[0] = 0x42;
         let payload = Payload { payload };

@@ -268,7 +268,7 @@ mod test_disposition_flags_serde {
     use super::DispositionFlags;
 
     #[test]
-    fn disposition_flags_serde_roundtrip() {
+    fn roundtrip() {
         let disposition_flags = DispositionFlags {
             flush_queue: true,
             send_ring_alert: true,
@@ -456,11 +456,11 @@ mod test_mt_header {
 }
 
 #[cfg(all(test, feature = "serde"))]
-mod test_mt_header_serde {
+mod test_header_serde {
     use super::{DispositionFlags, Header};
 
     #[test]
-    fn header_serde_roundtrip() {
+    fn roundtrip() {
         let header = Header {
             client_msg_id: 9999,
             imei: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14],
