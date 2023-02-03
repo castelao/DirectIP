@@ -118,7 +118,7 @@ jobs:
           test -e ~/.cargo/bin/cargo-tarpaulin || cargo install cargo-tarpaulin --version ${{ steps.tarpaulin-version.outputs.version }}
 
       - name: Run cargo-tarpaulin
-        run: cargo tarpaulin --timeout 600 --out Xml -- --test-threads 1
+        run: cargo tarpaulin --all-features --timeout 600 --out Xml -- --test-threads 1
 
       - name: Upload coverage to codecov
         uses: codecov/codecov-action@v1.0.3
