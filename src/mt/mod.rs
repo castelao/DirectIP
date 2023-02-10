@@ -203,6 +203,7 @@ mod test_mt_information_element_from {
     }
 }
 
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 #[derive(Debug)]
 pub struct MTMessage {
     elements: Vec<InformationElementType>,

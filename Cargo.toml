@@ -16,7 +16,7 @@ members = ["directip-client", "directip-dump"]
 default-members = [".", "directip-client"]
 
 [features]
-serde = ["dep:serde", "dep:serde_bytes"]
+serde = ["dep:serde", "dep:serde_bytes", "chrono/serde"]
 
 [dependencies]
 byteorder = "1"

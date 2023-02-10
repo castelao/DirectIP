@@ -31,6 +31,7 @@ trait InformationElement {
     }
 }
 
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 #[derive(Debug)]
 pub enum Message {
     MO(mo::MOMessage),

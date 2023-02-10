@@ -11,6 +11,7 @@ use derive_builder::Builder;
 use crate::error::Error;
 use crate::InformationElement;
 
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 #[derive(Debug, PartialEq)]
 /// Session Status
 ///
@@ -48,7 +49,7 @@ impl SessionStatus {
         }
     }
 
-    /// Parse a DispositionFlags from a Read trait
+    /// Parse a SessionStatus from a Read trait
     fn from_reader<R: std::io::Read>(mut rdr: R) -> Result<Self, Error> {
         let status = rdr.read_u8()?;
         SessionStatus::decode(&status)
@@ -170,6 +171,22 @@ mod test_session_status {
     }
 }
 
+#[cfg(all(test, feature = "serde"))]
+mod test_session_status_serde {
+    use super::SessionStatus;
+
+    #[test]
+    fn roundtrip() {
+        let session_status = SessionStatus::Success;
+        let json = serde_json::to_string(&session_status).unwrap();
+
+        let roundtrip: SessionStatus = serde_json::from_str(&json).unwrap();
+
+        assert_eq!(session_status, roundtrip);
+    }
+}
+
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 #[derive(Builder, Debug, PartialEq)]
 #[builder(pattern = "owned", build_fn(error = "crate::error::Error"))]
 /// Mobile Originated Header
@@ -232,7 +249,7 @@ impl Header {
     }
 
     #[allow(dead_code)]
-    fn builder() -> HeaderBuilder {
+    pub(crate) fn builder() -> HeaderBuilder {
         HeaderBuilder::default()
     }
 }
@@ -311,6 +328,30 @@ mod test_mt_header {
             header,
             Header::from_reader(header.to_vec().as_slice()).unwrap()
         );
+    }
+}
+
+#[cfg(all(test, feature = "serde"))]
+mod test_header_serde {
+    use super::{Header, SessionStatus};
+    use chrono::{DateTime, Utc};
+
+    #[test]
+    fn roundtrip() {
+        let header = Header {
+            cdr_uid: 9999,
+            imei: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14],
+            session_status: SessionStatus::Success,
+            momsn: 999,
+            mtmsn: 111,
+            time_of_session: "2000-03-14T12:12:12Z".parse::<DateTime<Utc>>().unwrap(),
+        };
+        let json = serde_json::to_string(&header).unwrap();
+        //assert_eq!(json, "");
+
+        let roundtrip: Header = serde_json::from_str(&json).unwrap();
+
+        assert_eq!(header, roundtrip);
     }
 }
 

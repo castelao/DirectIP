@@ -35,8 +35,9 @@ use crate::InformationElement;
 use header::Header;
 use payload::Payload;
 
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 #[allow(dead_code)]
-#[derive(Debug)]
+#[derive(Debug, PartialEq)]
 enum InformationElementType {
     H(Header),
     P(Payload),
@@ -98,6 +99,7 @@ impl From<Payload> for InformationElementType {
     }
 }
 
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 #[derive(Debug)]
 pub struct MOMessage {
     elements: Vec<InformationElementType>,
@@ -185,5 +187,43 @@ impl MOMessage {
 
     pub fn imei(&self) -> Option<[u8; 15]> {
         self.header().map(|h| h.imei())
+    }
+}
+
+#[cfg(all(test, feature = "serde"))]
+mod test_mo_information_element_serde {
+    use super::{header::SessionStatus, Header, InformationElementType, Payload};
+    use chrono::{DateTime, Utc};
+
+    #[test]
+    fn payload_roundtrip() {
+        let mut payload = vec![0u8; 10];
+        payload[0] = 0x42;
+        let p = Payload::builder().payload(payload).build().unwrap();
+        let ie: InformationElementType = p.into();
+        let json = serde_json::to_string(&ie).unwrap();
+
+        let roundtrip: InformationElementType = serde_json::from_str(&json).unwrap();
+
+        assert_eq!(ie, roundtrip);
+    }
+
+    #[test]
+    fn header_roundtrip() {
+        let header = Header::builder()
+            .cdr_uid(9999)
+            .session_status(SessionStatus::Success)
+            .momsn(16)
+            .mtmsn(18)
+            .imei([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 1, 2, 3, 4])
+            .time_of_session("2000-03-14T12:12:12Z".parse::<DateTime<Utc>>().unwrap())
+            .build()
+            .unwrap();
+        let ie: InformationElementType = header.into();
+        let json = serde_json::to_string(&ie).unwrap();
+
+        let roundtrip: InformationElementType = serde_json::from_str(&json).unwrap();
+
+        assert_eq!(ie, roundtrip);
     }
 }
