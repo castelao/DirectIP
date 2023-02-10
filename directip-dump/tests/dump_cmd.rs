@@ -1,4 +1,5 @@
 use assert_cmd::Command;
+use predicates::str::contains;
 
 #[test]
 fn missing_argument() {
@@ -28,4 +29,17 @@ fn imei() {
     assert
         .success()
         .stdout("00:01:02:03:04:05:06:07:08:09:0a:0b:0c:0d:0e\n");
+}
+
+#[test]
+fn json() {
+    let mut cmd = Command::cargo_bin("directip-dump").unwrap();
+
+    let assert = cmd
+        .arg("--json")
+        .arg("tests/data/mt_confirmation.isbd")
+        .assert();
+    assert
+        .success()
+        .stdout(contains(r#"message_status":{"SuccessfulQueueOrder":42}"#));
 }

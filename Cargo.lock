@@ -349,7 +349,7 @@ checksum = "6184e33543162437515c2e2b48714794e37845ec9851711914eec9d308f6ebe8"
 
 [[package]]
 name = "directip"
-version = "0.2.4"
+version = "0.2.5"
 dependencies = [
  "byteorder",
  "chrono",
@@ -384,6 +384,8 @@ dependencies = [
  "clap 4.0.32",
  "directip",
  "log",
+ "predicates",
+ "serde_json",
 ]
 
 [[package]]

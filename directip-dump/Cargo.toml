@@ -1,6 +1,6 @@
 [package]
 name = "directip-dump"
-version = "0.0.3"
+version = "0.0.4"
 authors = ["Guilherme Castelão <guilherme@castelao.net>", "Luiz Irber <luiz.irber@gmail.com>"]
 edition = "2021"
 description = "Iridium SBD Direct-IP message parser"
@@ -14,8 +14,10 @@ repository = "https://github.com/castelao/DirectIP"
 anyhow = "1.0.62"
 camino = "1.1.1"
 clap = { version = "4.0", features=["cargo", "derive"] }
-directip = { version = "0.2.4", path = "../" }
+directip = { version = "0.2.5", path = "../", features=["serde"]}
 log = "0.4"
+serde_json = "1.0.93"
 
 [dev-dependencies]
 assert_cmd = "2.0"
+predicates = "2.1.5"
