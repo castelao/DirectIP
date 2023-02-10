@@ -66,8 +66,6 @@
             cargo-outdated
             cargo-criterion
             ripgrep
-
-            (python39.withPackages (ps: with ps; [ virtualenv setuptools mypy tox ]))
           ];
 
           BINDGEN_EXTRA_CLANG_ARGS = "-isystem ${llvmPackages_13.libclang.lib}/lib/clang/${lib.getVersion clang}/include";
