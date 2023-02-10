@@ -26,6 +26,9 @@ struct Cli {
     #[arg(long)]
     imei: bool,
 
+    #[arg(long)]
+    json: bool,
+
     path: PathBuf,
 }
 
@@ -34,6 +37,7 @@ fn main() {
         path,
         direction,
         imei,
+        json,
     } = Cli::parse();
 
     let rdr = std::fs::File::open(path).expect("Error opening file");
@@ -51,6 +55,8 @@ fn main() {
         println!("{}", output);
     } else if direction {
         println!("{}", msg.message_type());
+    } else if json {
+        println!("{}", serde_json::to_string(&msg).unwrap());
     } else {
         dbg!(msg);
     }
