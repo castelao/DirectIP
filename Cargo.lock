@@ -362,6 +362,10 @@ dependencies = [
 ]
 
 [[package]]
+name = "directip-arrow"
+version = "0.1.0"
+
+[[package]]
 name = "directip-client"
 version = "0.2.0"
 dependencies = [
