@@ -7,4 +7,8 @@ pub struct VolatileStorage {
 
 impl super::Storage for VolatileStorage {}
 
-impl VolatileStorage {}
+impl VolatileStorage {
+    pub fn save(&mut self, msg: MOMessage) {
+        self.data.push(msg);
+    }
+}
