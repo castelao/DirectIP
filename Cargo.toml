@@ -30,6 +30,11 @@ derive_builder = "0.11.2"
 serde = { version = "1.0.147", optional = true, default-features = false, features=["serde_derive"]}
 serde_bytes = { version = "0.11.8", optional = true }
 
+[workspace.dependencies]
+chrono = "0.4.23"
+directip = { version = "0.2.3", path = "." }
+sqlx = { version = "=0.7.0", features = ["sqlite", "runtime-tokio-native-tls"] }
+
 [lib]
 name = "directip"
 
