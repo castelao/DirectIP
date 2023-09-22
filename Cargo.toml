@@ -12,8 +12,11 @@ rust-version = "1.60.0"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [workspace]
-members = ["directip-client", "directip-dump"]
+members = ["directip-client", "directip-dump", "crates/storage"]
 default-members = [".", "directip-client"]
+
+[workspace.package]
+authors = ["Guilherme Castelão <guilherme@castelao.net>", "Luiz Irber <luiz.irber@gmail.com>"]
 
 [features]
 serde = ["dep:serde", "dep:serde_bytes", "chrono/serde"]
