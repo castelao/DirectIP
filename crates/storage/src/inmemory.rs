@@ -1,14 +1,14 @@
-use crate::MOMessage;
+use crate::Message;
 
 pub struct VolatileStorage {
-    current_id: usize,
-    data: Vec<MOMessage>,
+    // current_id: usize,
+    data: Vec<Message>,
 }
 
-impl super::Storage for VolatileStorage {}
-
-impl VolatileStorage {
-    pub fn save(&mut self, msg: MOMessage) {
+impl super::Storage for VolatileStorage {
+    fn save(&mut self, msg: Message) {
         self.data.push(msg);
     }
 }
+
+impl VolatileStorage {}
