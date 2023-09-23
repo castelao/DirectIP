@@ -1,9 +1,18 @@
-use rusqlite::Connection;
+use sqlx;
 
-use crate::MOMessage;
+#[cfg(test)]
+use tokio;
 
-pub struct SQLiteStorage {}
+use directip::Message;
 
-impl super::Storage for SQLiteStorage {}
+pub struct SQLiteStorage {
+    pool: sqlx::SqlitePool,
+}
+
+impl super::Storage for SQLiteStorage {
+    fn save(&mut self, msg: Message) {
+        unimplemented!()
+    }
+}
 
 impl SQLiteStorage {}
