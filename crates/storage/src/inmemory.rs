@@ -11,4 +11,8 @@ impl super::Storage for VolatileStorage {
     }
 }
 
-impl VolatileStorage {}
+impl VolatileStorage {
+    pub(super) fn connect() -> VolatileStorage {
+        VolatileStorage { data: vec![] }
+    }
+}
