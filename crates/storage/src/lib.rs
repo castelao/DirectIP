@@ -11,7 +11,7 @@ mod sqlite;
 
 trait Storage {
     //fn connect(cfg: String) -> Self;
-    fn save(&mut self, msg: Message) -> ();
+    // fn save(&self, msg: Message);
 }
 
 enum Database {
@@ -19,4 +19,67 @@ enum Database {
     F(FileSystemStorage),
     #[cfg(feature = "sqlite")]
     L(sqlite::SQLiteStorage),
+}
+
+impl Database {
+    pub async fn open(cfg: &str) -> Result<Self, Box<dyn std::error::Error>> {
+        if (&cfg.len() >= &(11 as usize)) && (cfg[..11] == "inmemory://".to_string()) {
+            Ok(Database::M(VolatileStorage::connect()?))
+        } else if (&cfg.len() >= &(13 as usize)) && (cfg[..13] == "filesystem://".to_string()) {
+            Ok(Database::F(FileSystemStorage::connect()?))
+        } else if cfg[..9] == "sqlite://".to_string() {
+            #[cfg(feature = "sqlite")]
+            {
+                let db = crate::sqlite::SQLiteStorage::connect().await;
+                Ok(Database::L(db))
+            }
+            #[cfg(not(feature = "sqlite"))]
+            unimplemented!("Missing sqlite feature")
+        } else {
+            unimplemented!("Unknown storage")
+        }
+        /*
+        Database::F(FileSystemStorage::initiatedb(std::path::PathBuf::from(
+            "./",
+        )))
+        */
+    }
+
+    pub async fn save(&self, msg: Message) {
+        match self {
+            Database::M(s) => s.save(msg).await,
+            Database::F(s) => s.save(msg).await,
+            #[cfg(feature = "sqlite")]
+            Database::L(s) => s.save(msg).await,
+            _ => todo!(),
+        }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::Database;
+
+    fn sample() -> directip::Message {
+        let msg = directip::mt::MTMessage::from_reader([].as_slice());
+        directip::Message::MT(msg.unwrap())
+    }
+
+    #[test]
+    fn volatile() {
+        let db = Database::open("inmemory://").unwrap();
+        db.save(sample());
+    }
+
+    #[test]
+    fn filesystem() {
+        let db = Database::open("filesystem://").unwrap();
+        db.save(sample());
+    }
+
+    #[test]
+    fn open_sqlite() {
+        let db = Database::open("sqlite://").unwrap();
+        db.save(sample());
+    }
 }
