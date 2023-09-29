@@ -7,14 +7,19 @@ pub struct VolatileStorage {
     data: RwLock<Vec<Message>>,
 }
 
-impl super::Storage for VolatileStorage {
-    fn save(&mut self, msg: Message) {
-        self.data.push(msg);
-    }
-}
+impl super::Storage for VolatileStorage {}
 
 impl VolatileStorage {
-    pub(super) fn connect() -> VolatileStorage {
-        VolatileStorage { data: vec![] }
+    pub(super) fn connect() -> Result<VolatileStorage, Box<dyn std::error::Error>> {
+        Ok(VolatileStorage {
+            data: RwLock::new(vec![]),
+        })
+    }
+
+    pub(super) async fn save(&self, msg: Message) {
+        self.data
+            .write()
+            .expect("Failed to acquire write lock.")
+            .push(msg);
     }
 }
