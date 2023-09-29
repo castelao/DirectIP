@@ -17,6 +17,7 @@ default-members = [".", "directip-client"]
 
 [workspace.package]
 authors = ["Guilherme Castelão <guilherme@castelao.net>", "Luiz Irber <luiz.irber@gmail.com>"]
+license = "MIT OR Apache-2.0"
 
 [features]
 serde = ["dep:serde", "dep:serde_bytes", "chrono/serde"]
