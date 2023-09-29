@@ -12,5 +12,8 @@ chrono.workspace = true
 directip.workspace = true
 sqlx = { workspace = true, optional = true }
 
+[dev-dependencies]
+tokio = { workspace = true }
+
 [features]
 sqlite = ["dep:sqlx"]
