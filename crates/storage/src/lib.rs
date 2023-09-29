@@ -65,21 +65,22 @@ mod tests {
         directip::Message::MT(msg.unwrap())
     }
 
-    #[test]
-    fn volatile() {
-        let db = Database::open("inmemory://").unwrap();
+    #[tokio::test]
+    async fn volatile() {
+        let db = Database::open("inmemory://").await.unwrap();
         db.save(sample());
     }
 
-    #[test]
-    fn filesystem() {
-        let db = Database::open("filesystem://").unwrap();
+    #[tokio::test]
+    async fn filesystem() {
+        let db = Database::open("filesystem://").await.unwrap();
         db.save(sample());
     }
 
-    #[test]
-    fn open_sqlite() {
-        let db = Database::open("sqlite://").unwrap();
+    #[cfg(feature = "sqlite")]
+    #[tokio::test]
+    async fn open_sqlite() {
+        let db = Database::open("sqlite://").await.unwrap();
         db.save(sample());
     }
 }
