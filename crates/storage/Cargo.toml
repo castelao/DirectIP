@@ -13,7 +13,7 @@ directip.workspace = true
 sqlx = { workspace = true, optional = true }
 
 [dev-dependencies]
-tokio = { workspace = true }
+tokio = { workspace = true, features = ["rt-multi-thread"] }
 
 [features]
 sqlite = ["dep:sqlx"]
