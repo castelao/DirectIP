@@ -1,8 +1,10 @@
+use std::sync::RwLock;
+
 use crate::Message;
 
 pub struct VolatileStorage {
     // current_id: usize,
-    data: Vec<Message>,
+    data: RwLock<Vec<Message>>,
 }
 
 impl super::Storage for VolatileStorage {
