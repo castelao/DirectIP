@@ -14,9 +14,8 @@ impl super::Storage for SQLiteStorage {
 }
 
 impl SQLiteStorage {
-    pub async fn connect() -> Result<SQLiteStorage, Box<dyn std::error::Error> {
-        let pool = sqlx::SqlitePool::connect("sqlite://:memory:")
-            .await?;
+    pub async fn connect() -> Result<SQLiteStorage, Box<dyn std::error::Error>> {
+        let pool = sqlx::SqlitePool::connect("sqlite://:memory:").await?;
         SQLiteStorage { pool }
     }
 
@@ -27,5 +26,3 @@ impl SQLiteStorage {
                 .await;
     }
 }
-
-impl SQLiteStorage {}
