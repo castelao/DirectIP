@@ -193,8 +193,20 @@ jobs:
           command: publish
           args: --dry-run -p directip
 
-      - name: Make sure we can publish direciip-client
+      - name: Make sure we can publish directip-client
         uses: actions-rs/cargo@v1
         with:
           command: publish
           args: --dry-run -p directip-client
+
+      - name: Make sure we can publish directip-dump
+        uses: actions-rs/cargo@v1
+        with:
+          command: publish
+          args: --dry-run -p directip-dump
+
+      - name: Make sure we can publish directip-storage
+        uses: actions-rs/cargo@v1
+        with:
+          command: publish
+          args: --dry-run -p directip-storage
