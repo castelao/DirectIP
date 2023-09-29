@@ -38,6 +38,7 @@ pub enum Message {
     MT(mt::MTMessage),
 }
 
+// consider enum_dispatch
 impl Message {
     /// Identify the type of a Message between MO or MT
     pub fn message_type(&self) -> String {
@@ -65,6 +66,13 @@ impl Message {
         match &self {
             Message::MO(m) => m.imei(),
             Message::MT(m) => m.imei(),
+        }
+    }
+
+    pub fn to_vec(&self) -> Vec<u8> {
+        match &self {
+            Message::MO(m) => m.to_vec(),
+            Message::MT(m) => m.to_vec(),
         }
     }
 }

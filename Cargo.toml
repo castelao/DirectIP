@@ -1,6 +1,6 @@
 [package]
 name = "directip"
-version = "0.2.5"
+version = "0.2.6"
 authors = ["Guilherme Castelão <guilherme@castelao.net>", "Luiz Irber <luiz.irber@gmail.com>"]
 edition = "2021"
 description = "Iridium SBD Direct-IP communication protocol"
@@ -34,6 +34,7 @@ serde_bytes = { version = "0.11.8", optional = true }
 chrono = "0.4.31"
 directip = { version = "0.2.3", path = "." }
 sqlx = { version = "=0.7.0", features = ["sqlite", "runtime-tokio-native-tls"] }
+tokio = { version = "1.32.0", features = ["macros"] }
 
 [lib]
 name = "directip"
