@@ -16,6 +16,11 @@ the core support for applications such as the one listed below.
   components, such as the IMEI or message-id, from a Direct-IP binary
   transmission. This is an equivalent to ncdump but for Direct-IP messages.
 
+- [directip-storage](https://crates.io/crates/directip-storage): A library
+  that provides multiple backends to store Direct-IP messages. It can be
+  used, for instance, to archive MT messages transmitted or MO messages
+  received.
+
 ## Minimum supported Rust version
 
 Currently the minimum supported Rust version is 1.60.0
