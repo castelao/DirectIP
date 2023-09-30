@@ -23,7 +23,7 @@ enum Database {
 
 impl Database {
     pub async fn open(cfg: &str) -> Result<Self, Box<dyn std::error::Error>> {
-        if (&cfg.len() >= &(11 as usize)) && (cfg[..11] == "inmemory://".to_string()) {
+        if (&cfg.len() >= &(11 as usize)) && (cfg[..11] == "volatile://".to_string()) {
             Ok(Database::M(VolatileStorage::connect()?))
         } else if (&cfg.len() >= &(13 as usize)) && (cfg[..13] == "filesystem://".to_string()) {
             Ok(Database::F(FileSystemStorage::connect()?))
@@ -74,7 +74,7 @@ mod tests {
 
     #[tokio::test]
     async fn volatile() {
-        let db = Database::open("inmemory://").await.unwrap();
+        let db = Database::open("volatile://").await.unwrap();
         db.save(sample());
     }
 
