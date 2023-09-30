@@ -10,8 +10,7 @@ pub struct SQLiteStorage {
     pool: sqlx::SqlitePool,
 }
 
-impl super::Storage for SQLiteStorage {
-}
+impl super::Storage for SQLiteStorage {}
 
 impl SQLiteStorage {
     pub async fn connect() -> Result<SQLiteStorage, Box<dyn std::error::Error>> {
@@ -24,12 +23,5 @@ impl SQLiteStorage {
             .bind(msg.to_vec())
             .execute(&self.pool)
             .await;
-    }
-
-    async fn save(&self, msg: Message) {
-            sqlx::query("INSERT INTO inbox (payload) VALUES ($1)")
-                .bind(msg.to_vec())
-                .execute(&self.pool)
-                .await;
     }
 }
