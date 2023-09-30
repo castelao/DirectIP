@@ -14,7 +14,7 @@ sqlx = { workspace = true, optional = true }
 tempfile = { workspace = true }
 
 [dev-dependencies]
-tokio = { workspace = true, features = ["rt-multi-thread"] }
+tokio = { workspace = true, features = ["macros", "rt-multi-thread"] }
 
 [features]
 sqlite = ["dep:sqlx"]
