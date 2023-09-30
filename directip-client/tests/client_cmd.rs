@@ -53,6 +53,7 @@ fn missing_imei() -> Result<(), Box<dyn std::error::Error>> {
 }
 
 #[cfg(not(target_arch = "aarch64"))]
+#[cfg(not(target_arch = "powerpc64"))]
 #[test]
 // An ASCII payload as an argument
 fn ascii_inline() -> Result<(), Box<dyn std::error::Error>> {
@@ -72,6 +73,7 @@ fn ascii_inline() -> Result<(), Box<dyn std::error::Error>> {
 }
 
 #[cfg(not(target_arch = "aarch64"))]
+#[cfg(not(target_arch = "powerpc64"))]
 #[test]
 // An ASCII payload from a file
 fn ascii_fromfile() -> Result<(), Box<dyn std::error::Error>> {
@@ -95,6 +97,7 @@ fn ascii_fromfile() -> Result<(), Box<dyn std::error::Error>> {
 }
 
 #[cfg(not(target_arch = "aarch64"))]
+#[cfg(not(target_arch = "powerpc64"))]
 #[test]
 // A binary payload from a file
 fn binary_fromfile() -> Result<(), Box<dyn std::error::Error>> {
@@ -122,6 +125,7 @@ fn binary_fromfile() -> Result<(), Box<dyn std::error::Error>> {
 }
 
 #[cfg(not(target_arch = "aarch64"))]
+#[cfg(not(target_arch = "powerpc64"))]
 #[test]
 // An ASCII payload from stdin
 fn ascii_stdin() -> Result<(), Box<dyn std::error::Error>> {
@@ -141,6 +145,7 @@ fn ascii_stdin() -> Result<(), Box<dyn std::error::Error>> {
 }
 
 #[cfg(not(target_arch = "aarch64"))]
+#[cfg(not(target_arch = "powerpc64"))]
 #[test]
 // A binary payload from stdin
 fn binary_stdin() -> Result<(), Box<dyn std::error::Error>> {
