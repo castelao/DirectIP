@@ -1,9 +1,9 @@
 [package]
 name = "directip-storage"
 version = "0.0.1"
-authors.workspace = true
-license.workspace = true
-edition.workspace = true
+authors = ["Guilherme Castelão <guilherme@castelao.net>", "Luiz Irber <luiz.irber@gmail.com>"]
+license = "MIT OR Apache-2.0"
+edition = "2021"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
