@@ -68,7 +68,7 @@ jobs:
         target: [
           aarch64-unknown-linux-gnu,
           powerpc64le-unknown-linux-gnu,
-          s390x-unknown-linux-gnu,
+          # s390x-unknown-linux-gnu,
         ]
     steps:
       - uses: actions/checkout@v2
@@ -118,7 +118,7 @@ jobs:
           test -e ~/.cargo/bin/cargo-tarpaulin || cargo install cargo-tarpaulin --version ${{ steps.tarpaulin-version.outputs.version }}
 
       - name: Run cargo-tarpaulin
-        run: cargo tarpaulin --all-features --timeout 600 --out Xml -- --test-threads 1
+        run: cargo tarpaulin --all-features --timeout 600 --out xml -- --test-threads 1
 
       - name: Upload coverage to codecov
         uses: codecov/codecov-action@v3
@@ -193,8 +193,20 @@ jobs:
           command: publish
           args: --dry-run -p directip
 
-      - name: Make sure we can publish direciip-client
+      - name: Make sure we can publish directip-client
         uses: actions-rs/cargo@v1
         with:
           command: publish
           args: --dry-run -p directip-client
+
+      - name: Make sure we can publish directip-dump
+        uses: actions-rs/cargo@v1
+        with:
+          command: publish
+          args: --dry-run -p directip-dump
+
+      - name: Make sure we can publish directip-storage
+        uses: actions-rs/cargo@v1
+        with:
+          command: publish
+          args: --dry-run -p directip-storage

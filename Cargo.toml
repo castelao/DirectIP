@@ -1,6 +1,6 @@
 [package]
 name = "directip"
-version = "0.2.5"
+version = "0.2.6"
 authors = ["Guilherme Castelão <guilherme@castelao.net>", "Luiz Irber <luiz.irber@gmail.com>"]
 edition = "2021"
 description = "Iridium SBD Direct-IP communication protocol"
@@ -12,20 +12,33 @@ rust-version = "1.60.0"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [workspace]
-members = ["directip-client", "directip-dump"]
+members = ["directip-client", "directip-dump", "crates/storage"]
 default-members = [".", "directip-client"]
+
+[workspace.package]
+authors = ["Guilherme Castelão <guilherme@castelao.net>", "Luiz Irber <luiz.irber@gmail.com>"]
+edition = "2021"
+license = "MIT OR Apache-2.0"
+repository = "https://github.com/castelao/DirectIP"
 
 [features]
 serde = ["dep:serde", "dep:serde_bytes", "chrono/serde"]
 
 [dependencies]
 byteorder = "1"
-chrono = "0.4.23"
+chrono = "0.4.31"
 log = "0.4"
 thiserror = "1.0"
 derive_builder = "0.11.2"
 serde = { version = "1.0.147", optional = true, default-features = false, features=["serde_derive"]}
 serde_bytes = { version = "0.11.8", optional = true }
+
+[workspace.dependencies]
+chrono = "0.4.31"
+directip = { version = "0.2.6", path = "." }
+sqlx = { version = "=0.7.0", features = ["sqlite", "runtime-tokio-native-tls"] }
+tempfile = "3.8.0"
+tokio = { version = "1.32.0", features = ["macros"] }
 
 [lib]
 name = "directip"
