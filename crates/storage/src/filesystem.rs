@@ -17,8 +17,9 @@ impl super::Storage for FileSystemStorage {}
 
 impl FileSystemStorage {
     pub(super) fn connect() -> Result<Self, Box<dyn std::error::Error>> {
+        let tmp_dir = tempfile::TempDir::new().unwrap();
         Ok(FileSystemStorage {
-            root: "./demo".into(),
+            root: tmp_dir.path().into(),
         })
     }
 

@@ -11,6 +11,7 @@ edition = "2021"
 chrono.workspace = true
 directip.workspace = true
 sqlx = { workspace = true, optional = true }
+tempfile = { workspace = true }
 
 [dev-dependencies]
 tokio = { workspace = true, features = ["rt-multi-thread"] }
