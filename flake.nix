@@ -52,7 +52,7 @@
           buildInputs = [
             rust
             openssl
-            pkgconfig
+            pkg-config
 
             llvmPackages_13.libclang
             llvmPackages_13.libcxxClang
@@ -66,6 +66,7 @@
             cargo-outdated
             cargo-criterion
             ripgrep
+            jq
           ];
 
           BINDGEN_EXTRA_CLANG_ARGS = "-isystem ${llvmPackages_13.libclang.lib}/lib/clang/${lib.getVersion clang}/include";
