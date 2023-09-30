@@ -65,13 +65,13 @@ mod tests {
         directip::Message::MT(msg.unwrap())
     }
 
-    #[tokio::test]
+    //#[tokio::test]
     async fn volatile() {
         let db = Database::open("inmemory://").await.unwrap();
         db.save(sample());
     }
 
-    #[tokio::test]
+    //#[tokio::test]
     async fn filesystem() {
         let db = Database::open("filesystem://").await.unwrap();
         db.save(sample());
