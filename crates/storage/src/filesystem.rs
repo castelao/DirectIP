@@ -88,10 +88,7 @@ mod test_filesystem {
 
     #[tokio::test]
     async fn filesystem() {
-        let storage = FileSystemStorage {
-            root: "./demo".into(),
-        };
-
+        let storage = FileSystemStorage::connect().unwrap();
         storage.save(sample()).await;
     }
 }
