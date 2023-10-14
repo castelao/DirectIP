@@ -51,7 +51,6 @@ impl Database {
             Database::F(s) => s.save(msg).await,
             #[cfg(feature = "sqlite")]
             Database::L(s) => s.save(msg).await,
-            _ => todo!(),
         }
     }
 }
