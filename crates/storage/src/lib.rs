@@ -27,7 +27,9 @@ impl Database {
         if (&cfg.len() >= &(11 as usize)) && (cfg[..11] == "volatile://".to_string()) {
             Ok(Database::M(VolatileStorage::connect()?))
         } else if (&cfg.len() >= &(13 as usize)) && (cfg[..13] == "filesystem://".to_string()) {
-            Ok(Database::F(FileSystemStorage::connect()?))
+            Ok(Database::F(FileSystemStorage::connect(
+                std::path::PathBuf::from(cfg[13..].to_string()),
+            )?))
         } else if cfg[..9] == "sqlite://".to_string() {
             #[cfg(feature = "sqlite")]
             {
@@ -64,19 +66,22 @@ mod tests {
     #[tokio::test]
     async fn volatile() {
         let db = Database::open("volatile://").await.unwrap();
-        db.save(sample());
+        db.save(sample()).await;
     }
 
     #[tokio::test]
     async fn filesystem() {
-        let db = Database::open("filesystem://").await.unwrap();
-        db.save(sample());
+        let tmp_dir = tempfile::TempDir::new().unwrap();
+        let mut cfg = String::from("filesystem://");
+        cfg.push_str(tmp_dir.path().to_str().unwrap());
+        let db = Database::open(&cfg).await.unwrap();
+        db.save(sample()).await;
     }
 
     #[cfg(feature = "sqlite")]
     #[tokio::test]
     async fn open_sqlite() {
         let db = Database::open("sqlite://").await.unwrap();
-        db.save(sample());
+        db.save(sample()).await;
     }
 }
