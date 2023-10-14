@@ -1,7 +1,7 @@
 //   filesystem:///var/iridium-storage/
 
 use std::fs::File;
-use std::io::{BufWriter, Read, Write};
+use std::io::{BufWriter, Write};
 use std::path::PathBuf;
 
 use chrono::Utc;
