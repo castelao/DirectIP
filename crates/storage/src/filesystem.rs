@@ -17,26 +17,58 @@ pub struct FileSystemStorage {
 impl super::Storage for FileSystemStorage {}
 
 impl FileSystemStorage {
-    pub(super) fn connect() -> Result<Self, Box<dyn std::error::Error>> {
-        let tmp_dir = tempfile::TempDir::new().unwrap();
-        Ok(FileSystemStorage {
-            root: tmp_dir.path().into(),
-        })
+    pub(super) fn connect(path: String) -> Result<Self, Box<dyn std::error::Error>> {
+        let path = PathBuf::from(path);
+        assert!(path.is_dir());
+        Ok(FileSystemStorage { root: path })
     }
 
     pub(super) async fn save(&self, msg: Message) {
         let mut path = self.root.clone();
+
+        // Data directory
         path.push("data");
+        if !path.exists() {
+            tracing::warn!("Creating missing data directory: {:?}", path);
+            std::fs::create_dir(&path).unwrap();
+        }
+
+        // A directory for each modem
+        let imei = match msg.imei() {
+            Some(i) => i
+                .into_iter()
+                .map(|d| format!("{:02x?}", d))
+                .collect::<String>(),
+            None => "Unknown".to_string(),
+        };
+        path.push(imei);
+        if !path.exists() {
+            tracing::info!("Creating directory for new platform: {:?}", path);
+            std::fs::create_dir(&path).unwrap();
+        }
+
+        // One modem can accumulate a lot of messages. The issue here is not
+        // size, but the number of items for some file systems.
+        path.push(&Utc::now().format("%Y").to_string());
+        if !path.exists() {
+            tracing::info!("New annual directory: {:?}", path);
+            std::fs::create_dir(&path).unwrap();
+        }
+
         let mut filename = String::new();
         // Add IMEI?
         filename.push_str(&Utc::now().format("%Y%m%d%H%M%S%s").to_string());
         //filename.push_str(&format!("_{}", &self.current_id));
         filename.push_str(".isbd");
+        tracing::debug!("Message filename: {:?}", filename);
+
         path.push(filename);
 
+        tracing::info!("Saving message as: {:?}", path);
         let mut file = BufWriter::new(File::create(path).unwrap());
         file.write(&msg.to_vec()).unwrap();
     }
+
     /*
     pub fn current_id(&self) -> usize {
         self.current_id
