@@ -17,8 +17,7 @@ pub struct FileSystemStorage {
 impl super::Storage for FileSystemStorage {}
 
 impl FileSystemStorage {
-    pub(super) fn connect(path: String) -> Result<Self, Box<dyn std::error::Error>> {
-        let path = PathBuf::from(path);
+    pub(super) fn connect(path: PathBuf) -> Result<Self, Box<dyn std::error::Error>> {
         assert!(path.is_dir());
         Ok(FileSystemStorage { root: path })
     }
@@ -122,7 +121,8 @@ mod test_filesystem {
 
     #[tokio::test]
     async fn filesystem() {
-        let storage = FileSystemStorage::connect().unwrap();
+        let tmp_dir = tempfile::TempDir::new().unwrap();
+        let storage = FileSystemStorage::connect(tmp_dir.into_path()).unwrap();
         storage.save(sample()).await;
     }
 }
