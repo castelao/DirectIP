@@ -2,6 +2,7 @@ use std::sync::RwLock;
 
 use crate::Message;
 
+#[derive(Debug)]
 pub struct VolatileStorage {
     // current_id: usize,
     data: RwLock<Vec<Message>>,

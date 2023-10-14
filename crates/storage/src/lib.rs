@@ -14,6 +14,7 @@ trait Storage {
     // fn save(&self, msg: Message);
 }
 
+#[derive(Debug)]
 enum Database {
     M(VolatileStorage),
     F(FileSystemStorage),
