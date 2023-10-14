@@ -7,7 +7,7 @@ description = "Iridium SBD Direct-IP communication protocol"
 documentation = "https://docs.rs/directip"
 license = "MIT OR Apache-2.0"
 repository = "https://github.com/castelao/DirectIP"
-rust-version = "1.60.0"
+rust-version = "1.70.0"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
@@ -39,6 +39,7 @@ directip = { version = "0.2.6", path = "." }
 sqlx = { version = "=0.7.0", features = ["sqlite", "runtime-tokio-native-tls"] }
 tempfile = "3.8.0"
 tokio = { version = "1.32.0", features = ["macros"] }
+tracing = "0.1"
 
 [lib]
 name = "directip"
