@@ -67,7 +67,7 @@ mod tests {
         db.save(sample());
     }
 
-    //#[tokio::test]
+    #[tokio::test]
     async fn filesystem() {
         let db = Database::open("filesystem://").await.unwrap();
         db.save(sample());
