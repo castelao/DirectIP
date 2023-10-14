@@ -8,6 +8,7 @@ use chrono::Utc;
 
 use directip::Message;
 
+#[derive(Debug)]
 pub struct FileSystemStorage {
     root: PathBuf,
     // current_id: usize,
