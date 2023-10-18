@@ -3,6 +3,7 @@ use byteorder::{BigEndian, ReadBytesExt, WriteBytesExt};
 use crate::error::{Error, Result};
 use crate::InformationElement;
 
+#[allow(dead_code)]
 #[derive(Debug, PartialEq)]
 enum Orientation {
     NE,
@@ -12,6 +13,7 @@ enum Orientation {
 }
 
 impl Orientation {
+    #[allow(dead_code)]
     /// Decode an Orientation struct from a byte
     ///
     /// Only the two least significant bytes are used. The rest was supposed
@@ -27,6 +29,7 @@ impl Orientation {
         }
     }
 
+    #[allow(dead_code)]
     fn encode(&self) -> u8 {
         match self {
             Orientation::NE => 0,
@@ -64,6 +67,7 @@ struct Coordinate {
 }
 
 impl Coordinate {
+    #[allow(dead_code)]
     fn encode(&self) -> [u8; 7] {
         let mut buf = [0u8; 7];
 
@@ -92,6 +96,7 @@ impl Coordinate {
         buf
     }
 
+    #[allow(dead_code)]
     fn decode(buffer: &[u8]) -> Coordinate {
         if buffer.len() < 7 {
             todo!()
@@ -148,6 +153,7 @@ pub(super) struct Location {
 }
 
 impl Location {
+    #[allow(dead_code)]
     fn decode(buffer: &[u8]) -> Result<Self> {
         if buffer.len() < 3 {
             todo!()
