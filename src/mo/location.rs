@@ -190,7 +190,7 @@ impl InformationElement for Location {
 
     fn write<W: std::io::Write>(&self, wtr: &mut W) -> Result<usize> {
         todo!();
-        wtr.write_u8(self.identifier().into())?;
+        wtr.write_u8(self.identifier())?;
         wtr.write_u16::<BigEndian>(self.len())?;
         wtr.write_all(&self.encode())?;
         wtr.write_u32::<BigEndian>(self.cep_radius)?;
