@@ -43,7 +43,7 @@ mod test_orientation {
 
     #[test]
     fn roundtrip_decode_encode() {
-        for o in vec![0, 1, 2, 3] {
+        for o in [0, 1, 2, 3] {
             assert_eq!(o, Orientation::decode(&o).unwrap().encode())
         }
     }
@@ -196,12 +196,12 @@ impl InformationElement for Location {
         wtr.write_u16::<BigEndian>(self.len())?;
         wtr.write_all(&self.encode())?;
         wtr.write_u32::<BigEndian>(self.cep_radius)?;
-        return Ok(14);
+        Ok(14)
     }
 }
 
 #[cfg(test)]
-mod test_Location {
+mod test_location {
     use super::{InformationElement, Location};
 
     #[test]
