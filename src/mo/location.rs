@@ -49,6 +49,7 @@ mod test_orientation {
     }
 }
 
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 #[derive(Debug, PartialEq)]
 /// A geolocation coordinate
 ///
@@ -139,6 +140,7 @@ mod test_coordinate {
     }
 }
 
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 #[derive(Debug, PartialEq)]
 pub(super) struct Location {
     coordinate: Coordinate,
