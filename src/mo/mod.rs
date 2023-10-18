@@ -24,6 +24,7 @@
 //! MO Payload                      12  "Hello World!"
 
 mod header;
+mod location;
 mod payload;
 
 use std::io::Read;
@@ -33,6 +34,7 @@ use byteorder::{BigEndian, ReadBytesExt, WriteBytesExt};
 use crate::error::{Error, Result};
 use crate::InformationElement;
 use header::Header;
+use location::Location;
 use payload::Payload;
 
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
@@ -40,6 +42,7 @@ use payload::Payload;
 #[derive(Debug, PartialEq)]
 enum InformationElementType {
     H(Header),
+    L(Location),
     P(Payload),
 }
 
@@ -47,6 +50,7 @@ impl InformationElement for InformationElementType {
     fn identifier(&self) -> u8 {
         match self {
             InformationElementType::H(element) => element.identifier(),
+            InformationElementType::L(element) => element.identifier(),
             InformationElementType::P(element) => element.identifier(),
         }
     }
@@ -54,6 +58,7 @@ impl InformationElement for InformationElementType {
     fn len(&self) -> u16 {
         match self {
             InformationElementType::H(element) => element.len(),
+            InformationElementType::L(element) => element.len(),
             InformationElementType::P(element) => element.len(),
         }
     }
@@ -61,6 +66,7 @@ impl InformationElement for InformationElementType {
     fn write<W: std::io::Write>(&self, wtr: &mut W) -> Result<usize> {
         match self {
             InformationElementType::H(element) => element.write(wtr),
+            InformationElementType::L(element) => element.write(wtr),
             InformationElementType::P(element) => element.write(wtr),
         }
     }
