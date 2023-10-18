@@ -197,3 +197,18 @@ impl InformationElement for Location {
         return Ok(14);
     }
 }
+
+#[cfg(test)]
+mod test_Location {
+    use super::{InformationElement, Location};
+
+    #[test]
+    fn decode() {
+        let buffer = [
+            0x03, 0x00, 0x0b, 0x01, 0x21, 0x28, 0x47, 0x76, 0x7f, 0x06, 0x00, 0x01, 0x00, 0x00,
+        ];
+        let location = Location::decode(&buffer).unwrap();
+        assert_eq!(location.len(), 11);
+        assert_eq!(location.cep_radius, 65536);
+    }
+}
