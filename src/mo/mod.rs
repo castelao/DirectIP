@@ -87,7 +87,15 @@ impl InformationElementType {
                 let payload = Payload::from_reader(buffer).unwrap();
                 InformationElementType::P(payload)
             }
-            _ => return Err(Error::Undefined),
+            0x03 => {
+                let location = Location::from_reader(buffer).unwrap();
+                tracing::debug!("Parsed an MO::Location element");
+                InformationElementType::L(location)
+            }
+            _ => {
+                tracing::debug!("Not a valid MO IEI ({})", &iei);
+                return Err(Error::Undefined);
+            }
         };
         Ok(element)
     }
