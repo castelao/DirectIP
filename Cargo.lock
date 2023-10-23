@@ -528,7 +528,7 @@ dependencies = [
 
 [[package]]
 name = "directip"
-version = "0.2.6"
+version = "0.2.7"
 dependencies = [
  "byteorder",
  "chrono",
@@ -538,6 +538,7 @@ dependencies = [
  "serde_bytes",
  "serde_json",
  "thiserror",
+ "tracing",
 ]
 
 [[package]]
