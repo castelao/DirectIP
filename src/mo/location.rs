@@ -67,6 +67,13 @@ struct Coordinate {
 }
 
 impl Coordinate {
+    fn from_reader<R: std::io::Read>(mut rdr: R) -> Result<Coordinate> {
+        let mut buffer = [0u8; 7];
+        rdr.read_exact(&mut buffer)?;
+        let coordinate = Coordinate::decode(&buffer);
+        Ok(coordinate)
+    }
+
     #[allow(dead_code)]
     fn encode(&self) -> [u8; 7] {
         let mut buf = [0u8; 7];
@@ -153,6 +160,21 @@ pub(super) struct Location {
 }
 
 impl Location {
+    pub(super) fn from_reader<R: std::io::Read>(mut rdr: R) -> Result<Location> {
+        let iei = rdr.read_u8()?;
+        assert_eq!(iei, 0x03);
+        let len = rdr.read_u16::<BigEndian>()?;
+        assert_eq!(len, 11);
+
+        let coordinate = Coordinate::from_reader(&mut rdr)?;
+        let cep_radius = rdr.read_u32::<BigEndian>()?;
+
+        Ok(Location {
+            coordinate,
+            cep_radius,
+        })
+    }
+
     #[allow(dead_code)]
     fn decode(buffer: &[u8]) -> Result<Self> {
         if buffer.len() < 3 {
