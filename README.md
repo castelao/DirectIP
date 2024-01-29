@@ -23,7 +23,7 @@ the core support for applications such as the one listed below.
 
 ## Minimum supported Rust version
 
-Currently the minimum supported Rust version is 1.70.0
+Currently the minimum supported Rust version is 1.75.0
 
 ## License
 
